@@ -1,4 +1,16 @@
 from django.db import models
+from viewflow.fields import CompositeKey
+
+GENDER_CHOICES = [
+    ('Ж', 'женский'),
+    ('М', 'мужской')
+]
+
+CLIENT_STATUS_CHOICES = [
+    ('обычный', 'обычный'),
+    ('привилегированный', 'привилегированный'),
+    ('VIP', 'VIP')
+]
 
 
 class City(models.Model):
@@ -13,13 +25,24 @@ class City(models.Model):
         return self.city
 
 
+class ClientStatus(models.Model):
+    name = models.CharField(max_length=32)
+
+    class Meta:
+        managed = False
+        db_table = 'client_status'
+
+    def __str__(self):
+        return self.name
+
+
 class Client(models.Model):
     surname = models.CharField(max_length=64)
     first_middle_name = models.CharField(db_column='first&middle_name', max_length=128)  # Field renamed to remove unsuitable characters.
-    gender = models.CharField(max_length=1)
+    gender = models.CharField(max_length=15, choices=GENDER_CHOICES)
     date_of_birth = models.DateField()
     place_of_birth = models.CharField(max_length=256)
-    status = models.CharField(max_length=17, blank=True, null=True)
+    status = models.ForeignKey(ClientStatus, models.DO_NOTHING, db_column='status')
 
     class Meta:
         managed = False
@@ -29,10 +52,21 @@ class Client(models.Model):
         return self.surname
 
 
+class Organization(models.Model):
+    name = models.CharField(max_length=32)
+
+    class Meta:
+        managed = False
+        db_table = 'organization'
+
+    def __str__(self):
+        return self.name
+
+
 class Contract(models.Model):
     date_time = models.DateTimeField(db_column='date&time')  # Field renamed to remove unsuitable characters.
     preliminary_agreement_number = models.ForeignKey('PreliminaryAgreement', models.DO_NOTHING, db_column='preliminary_agreement_number')
-    organization = models.CharField(max_length=9)
+    organization = models.ForeignKey(Organization, models.DO_NOTHING, db_column='organization')
     employee = models.ForeignKey('Employee', models.DO_NOTHING, db_column='employee')
     trip_participants = models.ForeignKey(Client, models.DO_NOTHING, db_column='trip_participants')
     currency = models.ForeignKey('CurrencyRate', models.DO_NOTHING, db_column='currency')
@@ -58,14 +92,25 @@ class CurrencyRate(models.Model):
         return self.currency_name
 
 
+class EmployeePosition(models.Model):
+    name = models.CharField(max_length=32)
+
+    class Meta:
+        managed = False
+        db_table = 'employee_position'
+
+    def __str__(self):
+        return self.name
+
+
 class Employee(models.Model):
     surname = models.CharField(max_length=64)
     first_middle_name = models.CharField(db_column='first&middle_name', max_length=128)  # Field renamed to remove unsuitable characters.
-    gender = models.CharField(max_length=1)
-    position = models.CharField(max_length=13)
-    organization = models.CharField(max_length=9)
+    gender = models.CharField(max_length=15, choices=GENDER_CHOICES)
+    position = models.ForeignKey(EmployeePosition, models.DO_NOTHING, db_column='position')
+    organization = models.ForeignKey(Organization, models.DO_NOTHING, db_column='organization')
     date_of_birth = models.DateField(blank=True, null=True)
-    photo = models.TextField(blank=True, null=True)
+    photo = models.ImageField(upload_to='employee')
 
     class Meta:
         managed = False
@@ -87,7 +132,7 @@ class Hotel(models.Model):
         db_table = 'hotel'
 
     def __str__(self):
-        return self.hotel
+        return self.hotel_name
 
 
 class HotelReservation(models.Model):
@@ -109,7 +154,8 @@ class HotelReservation(models.Model):
 
 
 class Passport(models.Model):
-    series = models.IntegerField(primary_key=True)
+    id = CompositeKey(columns=['series', 'number'])
+    series = models.IntegerField()
     number = models.IntegerField()
     client = models.ForeignKey(Client, models.DO_NOTHING)
     passport_type = models.CharField(max_length=11)
@@ -120,7 +166,6 @@ class Passport(models.Model):
     class Meta:
         managed = False
         db_table = 'passport'
-        unique_together = (('series', 'number'),)
 
     def __str__(self):
         return str(self.id)
@@ -128,7 +173,7 @@ class Passport(models.Model):
 
 class Payment(models.Model):
     date_time = models.DateTimeField(db_column='date&time')  # Field renamed to remove unsuitable characters.
-    organization = models.CharField(max_length=9)
+    organization = models.ForeignKey(Organization, models.DO_NOTHING, db_column='organization')
     contract_number = models.ForeignKey(Contract, models.DO_NOTHING, db_column='contract_number')
     sum_in_rubles = models.IntegerField()
 
@@ -142,7 +187,7 @@ class Payment(models.Model):
 
 class PreliminaryAgreement(models.Model):
     date_time = models.DateTimeField(db_column='date&time')  # Field renamed to remove unsuitable characters.
-    organization = models.CharField(max_length=9)
+    organization = models.ForeignKey(Organization, models.DO_NOTHING, db_column='organization')
     employee = models.ForeignKey(Employee, models.DO_NOTHING, db_column='employee')
     client = models.ForeignKey(Client, models.DO_NOTHING, db_column='client')
     number_of_trip_participants = models.IntegerField()
@@ -161,7 +206,7 @@ class PreliminaryAgreement(models.Model):
 
 class Synchronization(models.Model):
     date_time = models.DateTimeField(db_column='date&time')  # Field renamed to remove unsuitable characters.
-    organization = models.CharField(max_length=9)
+    organization = models.ForeignKey(Organization, models.DO_NOTHING, db_column='organization')
     file = models.TextField()
 
     class Meta:

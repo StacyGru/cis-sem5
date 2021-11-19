@@ -2,8 +2,11 @@ from rest_framework import serializers
 from .models import (
     City,
     Client,
+    ClientStatus,
     Contract,
     CurrencyRate,
+    Organization,
+    EmployeePosition,
     Employee,
     Hotel,
     HotelReservation,
@@ -27,6 +30,12 @@ class ClientSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ClientStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ClientStatus
+        fields = '__all__'
+
+
 class ContractSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contract
@@ -36,6 +45,18 @@ class ContractSerializer(serializers.ModelSerializer):
 class CurrencyRateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CurrencyRate
+        fields = '__all__'
+
+
+class OrganizationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Organization
+        fields = '__all__'
+
+
+class EmployeePositionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmployeePosition
         fields = '__all__'
 
 

@@ -2,8 +2,11 @@ from rest_framework import viewsets, permissions
 from .models import (
     City,
     Client,
+    ClientStatus,
     Contract,
     CurrencyRate,
+    Organization,
+    EmployeePosition,
     Employee,
     Hotel,
     HotelReservation,
@@ -16,8 +19,11 @@ from .models import (
 from .serializers import (
     CitySerializer,
     ClientSerializer,
+    ClientStatusSerializer,
     ContractSerializer,
     CurrencyRateSerializer,
+    OrganizationSerializer,
+    EmployeePositionSerializer,
     EmployeeSerializer,
     HotelSerializer,
     HotelReservationSerializer,
@@ -45,6 +51,14 @@ class ClientViewSet(viewsets.ModelViewSet):
     serializer_class = ClientSerializer
 
 
+class ClientStatusViewSet(viewsets.ModelViewSet):
+    queryset = ClientStatus.objects.all()
+    permission_classes = [
+        permissions.AllowAny
+    ]
+    serializer_class = ClientStatusSerializer
+
+
 class ContractViewSet(viewsets.ModelViewSet):
     queryset = Contract.objects.all()
     permission_classes = [
@@ -59,6 +73,22 @@ class CurrencyRateViewSet(viewsets.ModelViewSet):
         permissions.AllowAny
     ]
     serializer_class = CurrencyRateSerializer
+
+
+class OrganizationViewSet(viewsets.ModelViewSet):
+    queryset = Organization.objects.all()
+    permission_classes = [
+        permissions.AllowAny
+    ]
+    serializer_class = OrganizationSerializer
+
+
+class EmployeePositionViewSet(viewsets.ModelViewSet):
+    queryset = EmployeePosition.objects.all()
+    permission_classes = [
+        permissions.AllowAny
+    ]
+    serializer_class = EmployeePositionSerializer
 
 
 class EmployeeViewSet(viewsets.ModelViewSet):

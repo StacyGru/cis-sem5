@@ -2,8 +2,11 @@ from django.contrib import admin
 from .models import (
     City,
     Client,
+    ClientStatus,
     Contract,
     CurrencyRate,
+    Organization,
+    EmployeePosition,
     Employee,
     Hotel,
     HotelReservation,
@@ -28,6 +31,10 @@ class ClientAdmin(admin.ModelAdmin):
     search_fields = ('id', 'surname')
 
 
+class ClientStatusAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+
+
 class ContractAdmin(admin.ModelAdmin):
     list_display = ('id', 'date_time', 'preliminary_agreement_number', 'organization', 'employee', 'trip_participants', 'currency', 'sum')
     list_filter = ('date_time', 'organization', 'employee')
@@ -37,6 +44,14 @@ class ContractAdmin(admin.ModelAdmin):
 class CurrencyRateAdmin(admin.ModelAdmin):
     list_display = ('id', 'currency_name', 'rate')
     search_fields = ('id', 'currency_name')
+
+
+class OrganizationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+
+
+class EmployeePositionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
 
 
 class EmployeeAdmin(admin.ModelAdmin):
@@ -89,8 +104,11 @@ class TripAdmin(admin.ModelAdmin):
 
 admin.site.register(City, CityAdmin)
 admin.site.register(Client, ClientAdmin)
+admin.site.register(ClientStatus, ClientStatusAdmin)
 admin.site.register(Contract, ContractAdmin)
 admin.site.register(CurrencyRate, CurrencyRateAdmin)
+admin.site.register(Organization, OrganizationAdmin)
+admin.site.register(EmployeePosition, EmployeePositionAdmin)
 admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(Hotel, HotelAdmin)
 admin.site.register(HotelReservation, HotelReservationAdmin)
