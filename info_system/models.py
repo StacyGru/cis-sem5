@@ -6,12 +6,6 @@ GENDER_CHOICES = [
     ('М', 'мужской')
 ]
 
-CLIENT_STATUS_CHOICES = [
-    ('обычный', 'обычный'),
-    ('привилегированный', 'привилегированный'),
-    ('VIP', 'VIP')
-]
-
 
 class City(models.Model):
     city = models.CharField(max_length=64)
