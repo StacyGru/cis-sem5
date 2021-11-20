@@ -1,0 +1,31 @@
+{% extends 'main.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<h3 class="mt-5 mb-5 text-center">Сотрудник</h3>
+
+<div class="row" style="">
+    <div class="col-md-6 offset-md-3">
+<!--        <div class="input-group date" id="datetimepicker1" data-target-input="nearest">-->
+            <form action="" method="POST">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <input type="submit" class="btn btn-warning mt-3" value="Сохранить">
+            </form>
+<!--        <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">-->
+<!--        <div class="input-group-text"><i class="fa fa-calendar"></i></div>-->
+<!--        </div>-->
+<!--</div>-->
+    </div>
+</div>
+
+<script>
+  $(function () {
+    $("#datetimepicker1").datetimepicker({
+      format: 'DD/MM/YYYY HH:mm',
+    });
+  });
+</script>
+
+{% endblock %}

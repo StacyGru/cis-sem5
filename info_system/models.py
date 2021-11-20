@@ -104,7 +104,7 @@ class Employee(models.Model):
     position = models.ForeignKey(EmployeePosition, models.DO_NOTHING, db_column='position')
     organization = models.ForeignKey(Organization, models.DO_NOTHING, db_column='organization')
     date_of_birth = models.DateField(blank=True, null=True)
-    photo = models.ImageField(upload_to='employee')
+    photo = models.ImageField(upload_to='employee', blank=True, null=True)
 
     class Meta:
         managed = False
