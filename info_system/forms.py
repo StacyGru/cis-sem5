@@ -1,45 +1,20 @@
 from django import forms
 from django.contrib.auth.models import User
-from django.forms import widgets
 from .models import (
     Employee
 )
-from django.utils.safestring import mark_safe
-from django.utils.html import escape, conditional_escape
-from django.utils.encoding import force_text
-from django.forms.widgets import ClearableFileInput, Input, CheckboxInput
+from django.forms.widgets import ClearableFileInput
 
 
 class DateInput(forms.DateInput):
     input_type = 'date'
 
 
-# class CustomClearableFileInput(ClearableFileInput):
-#
-#     def render(self, name, value, attrs=None, renderer=None):
-#         substitutions = {
-#             'initial_text': "Текущее изображение",
-#             'input_text': self.input_text,
-#             'clear_template': '',
-#             'clear_checkbox_label': self.clear_checkbox_label,
-#             }
-#         template = '%(input)s'
-#         substitutions['input'] = Input.render(self, name, value, attrs)
-#
-#         if value and hasattr(value, "url"):
-#             template = self.template_with_initial
-#             substitutions['initial'] = ('<img src="%s" alt="%s"/>'
-#                                         % (escape(value.url),
-#                                            escape(force_text(value))))
-#             if not self.is_required:
-#                 checkbox_name = self.clear_checkbox_name(name)
-#                 checkbox_id = self.clear_checkbox_id(checkbox_name)
-#                 substitutions['clear_checkbox_name'] = conditional_escape(checkbox_name)
-#                 substitutions['clear_checkbox_id'] = conditional_escape(checkbox_id)
-#                 substitutions['clear'] = CheckboxInput().render(checkbox_name, False, attrs={'id': checkbox_id})
-#                 substitutions['clear_template'] = self.template_with_clear % substitutions
-#
-#         return mark_safe(template % substitutions)
+class MyClearableFileInput(ClearableFileInput):
+    initial_text = 'Текущая фотография'
+    input_text = 'Изменить фотографию'
+    clear_checkbox_label = 'Удалить фотографию'
+    upload_to = 'media/employee'
 
 
 class LoginForm(forms.ModelForm):
@@ -67,7 +42,7 @@ class LoginForm(forms.ModelForm):
 
 
 class EmployeeForm(forms.ModelForm):
-    photo = forms.ImageField
+    photo = forms.ImageField(required=False, widget=MyClearableFileInput)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -41,8 +41,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'info_system.apps.InfoSystemConfig',
     'rest_framework',
-    'crispy_forms'
+    'crispy_forms',
+    'django.forms'
 ]
+
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # BOOTSTRAP4 = {
@@ -133,6 +136,7 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(_PATH, 'files', 'static')
 STATIC_URL = '/static/'
+
 
 MEDIA_ROOT = os.path.join(_PATH, 'files', 'media')
 MEDIA_URL = '/media/'

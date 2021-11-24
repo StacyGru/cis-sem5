@@ -102,7 +102,7 @@ def edit_employee(request, pk):
     employee = Employee.objects.get(id=pk)
     form = EmployeeForm(instance=employee)
     if request.method == 'POST':
-        form = EmployeeForm(request.POST, instance=employee)
+        form = EmployeeForm(request.POST, request.FILES, instance=employee)
         if form.is_valid():
             form.save()
             messages.add_message(request, messages.INFO, 'Сотрудник успешно изменён!')
@@ -116,6 +116,7 @@ def edit_employee(request, pk):
             'form': form
         }
     )
+
 
 #
 # def delete_client(request, pk):
