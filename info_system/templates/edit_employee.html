@@ -6,24 +6,24 @@
 
 <h3 class="mt-5 mb-5 text-center">Сотрудник</h3>
 
-<div class="row" style="">
-    <div class="col-md-6 offset-md-3">
-<!--        <div class="input-group date" id="datetimepicker1" data-target-input="nearest">-->
-            <form action="" method="POST">
+<div class="row justify-content-md-center" style="">
+    <div class="col col-lg-2 justify-content-center">
+        {% if employee.photo %}
+                    <img src="{{ employee.photo.url }}" alt="фотография сотрудника" style="max-width: 100%;"><br>
+                    <a href="{{ employee.photo.url }}" download="сотрудник" class="btn btn-secondary btn-sm mt-2">Скачать фотографию</a>
+                {% else %}
+<!--                    <p>У сотрудника нет фотографии</p>-->
+                {% endif %}
+        </div>
+    <div class="col-lg-6">
+            <form action="" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form|crispy }}
-                {% if employee.photo %}
-                    <img src="../../media/{{ employee.photo }}" alt="фотография сотрудника" style="max-width: 100%;"><br>
-                    <a href="../../media/{{ employee.photo }}" download="сотрудник" class="btn btn-success btn-sm mt-2">Скачать фотографию</a>
-                {% else %}
-                    <p>У сотрудника нет фотографии</p>
-                {% endif %}
-                <input type="submit" class="btn btn-warning mt-3" value="Сохранить">
+                <input type="submit" class="btn btn-warning mt-3 mb-3" value="Сохранить">
             </form>
     </div>
+     <div class="col col-lg-2">
+        </div>
 </div>
-
-
-
 
 {% endblock %}

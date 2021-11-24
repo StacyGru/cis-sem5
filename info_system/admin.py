@@ -56,8 +56,15 @@ class EmployeePositionAdmin(admin.ModelAdmin):
 
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = ('id', 'surname', 'first_middle_name', 'gender', 'position', 'organization', 'date_of_birth', 'photo')
+    # readonly_fields = ('photo_preview',)
     list_filter = ('gender', 'position', 'organization')
     search_fields = ('id', 'surname')
+
+    # def photo_preview(self, obj):
+    #     return obj.photo_preview
+    #
+    # photo_preview.short_description = 'Фотография'
+    # photo_preview.allow_tags = True
 
 
 class HotelAdmin(admin.ModelAdmin):
