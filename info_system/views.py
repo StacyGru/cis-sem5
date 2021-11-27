@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import render
-from django.http.response import HttpResponse, HttpResponseRedirect
+from django.http.response import HttpResponseRedirect
 from django.views.generic import View
 from .forms import (
     LoginForm,
@@ -12,11 +12,10 @@ from .models import (
     Client,
     Employee
 )
-from django.forms.forms import Form
 from django.db import transaction
 
 
-class BaseView(View):
+class MainView(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'main.html', {})
 
@@ -62,40 +61,33 @@ class ClientsView(View):
 class EmployeesView(View):
     def get(self, request, *args, **kwargs):
         employees = Employee.objects.all()
+        form = EmployeeForm(request.POST or None)
         return render(
             request,
-            'employees.html',
-            {'employees': employees}
+            'employees/employees_list.html',
+            {
+                'employees': employees,
+                'form': form
+            }
         )
 
-    # @transaction.atomic
-    # def post(self, request, *args, **kwargs):
-    #     form = EmployeeForm(request.POST or None)
-    #     if form.is_valid():
-    #         new_employee = form.save(commit=False)
-    #         new_employee.surname = form.cleaned_data['surname']
-    #         new_employee.first_middle_name = form.cleaned_data['first_middle_name']
-    #         new_employee.gender = form.cleaned_data['gender']
-    #         new_employee.position = form.cleaned_data['position']
-    #         new_employee.organization = form.cleaned_data['organization']
-    #         new_employee.date_of_birth = form.cleaned_data['date_of_birth']
-    #         new_employee.photo = form.cleaned_data['photo']
-    #         new_employee.save()
-    #         messages.add_message(request, messages.INFO, 'Сотрудник успешно добавлен!')
-    #         return HttpResponseRedirect('employees')
-    #     messages.add_message(request, messages.ERROR, 'Не удалось добавить сотрудника!')
-    #     return HttpResponseRedirect('employees')
-
-
-# def get_employee(request, pk):
-#     employee = Employee.objects.get(id=pk)
-#     return render(
-#             request,
-#             'employees.html',
-#             {
-#                 'employee': employee
-#             }
-#         )
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        form = EmployeeForm(request.POST or None)
+        if form.is_valid():
+            new_employee = form.save(commit=False)
+            new_employee.surname = form.cleaned_data['surname']
+            new_employee.first_middle_name = form.cleaned_data['first_middle_name']
+            new_employee.gender = form.cleaned_data['gender']
+            new_employee.position = form.cleaned_data['position']
+            new_employee.organization = form.cleaned_data['organization']
+            new_employee.date_of_birth = form.cleaned_data['date_of_birth']
+            new_employee.photo = form.cleaned_data['photo']
+            new_employee.save()
+            messages.add_message(request, messages.INFO, 'Сотрудник успешно добавлен!')
+            return HttpResponseRedirect('/employees')
+        messages.add_message(request, messages.ERROR, 'Не удалось добавить сотрудника!')
+        return HttpResponseRedirect('/employees')
 
 
 def edit_employee(request, pk):
@@ -110,7 +102,7 @@ def edit_employee(request, pk):
         messages.add_message(request, messages.ERROR, 'Не удалось изменить сотрудника!')
     return render(
         request,
-        'edit_employee.html',
+        'employees/edit_employee.html',
         {
             'employee': employee,
             'form': form
@@ -118,17 +110,16 @@ def edit_employee(request, pk):
     )
 
 
-#
-# def delete_client(request, pk):
-#     client = Client.objects.get(id=pk)
-#     if request.method == 'POST':
-#         client.delete()
-#         messages.add_message(request, messages.INFO, 'Клиент успешно удалён!')
-#         return HttpResponseRedirect('/operator/clients')
-#     return render(
-#         request,
-#         'operator/delete_client.html',
-#         {
-#             'client': client
-#         }
-#     )
+def delete_employee(request, pk):
+    employee = Employee.objects.get(id=pk)
+    if request.method == 'POST':
+        employee.delete()
+        messages.add_message(request, messages.INFO, 'Сотрудник успешно удалён!')
+        return HttpResponseRedirect('/employees')
+    return render(
+        request,
+        'employees/delete_employee.html',
+        {
+            'employee': employee
+        }
+    )

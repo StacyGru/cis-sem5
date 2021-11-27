@@ -1,6 +1,5 @@
 from django.db import models
 from viewflow.fields import CompositeKey
-from django.utils.html import mark_safe
 
 GENDER_CHOICES = [
     ('Ж', 'женский'),
@@ -105,7 +104,7 @@ class Employee(models.Model):
     position = models.ForeignKey(EmployeePosition, models.DO_NOTHING, db_column='position')
     organization = models.ForeignKey(Organization, models.DO_NOTHING, db_column='organization')
     date_of_birth = models.DateField(blank=True, null=True)
-    photo = models.ImageField(upload_to='images/', blank=True, null=True)
+    photo = models.ImageField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -113,12 +112,6 @@ class Employee(models.Model):
 
     def __str__(self):
         return self.surname
-
-    # @property
-    # def photo_preview(self):
-    #     if self.photo:
-    #         return mark_safe('<img src="{}" width="300" height="300" />'.format(self.photo.url))
-    #     return ""
 
 
 class Hotel(models.Model):

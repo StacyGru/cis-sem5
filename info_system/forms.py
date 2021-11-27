@@ -3,14 +3,9 @@ from django.contrib.auth.models import User
 from .models import (
     Employee
 )
-from django.forms.widgets import ClearableFileInput, CheckboxInput
-from PIL import Image
-from django.forms.widgets import FileInput
+from django.forms.widgets import ClearableFileInput
 from django.utils.translation import ugettext_lazy
-from django.utils.html import format_html, conditional_escape
-from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
-from django.utils.html import format_html, format_html_join, escape, conditional_escape
 
 
 class DateInput(forms.DateInput):
@@ -18,10 +13,6 @@ class DateInput(forms.DateInput):
 
 
 class MyClearableFileInput(ClearableFileInput):
-    # initial_text = 'Текущая фотография'
-    # initial = '<img src="%(initial_url)s"/>'
-    # input_text = 'Изменить фотографию'
-    # clear_checkbox_label = 'Удалить фотографию'
     initial_text = ugettext_lazy('Текущая фотография')
     input_text = ugettext_lazy('Изменить фотографию')
     template_with_initial = u'%(initial)s %(clear_template)s %(input_text)s: %(input)s'
@@ -36,13 +27,6 @@ class MyClearableFileInput(ClearableFileInput):
         }
         template = '%(input)s'
         substitutions['input'] = super(MyClearableFileInput, self).render(name, value, attrs)
-
-        # if value and hasattr(value, "url"):
-        #     template = self.template_with_initial
-        #     substitutions['initial'] = format_html(self.url_markup_template,
-        #                                            value.url,
-        #                                            force_text(value))
-
         return mark_safe(template % substitutions)
 
 
@@ -88,5 +72,4 @@ class EmployeeForm(forms.ModelForm):
         fields = ['surname', 'first_middle_name', 'gender', 'position', 'organization', 'date_of_birth', 'photo']
         widgets = {
             'date_of_birth': DateInput(),
-            # 'photo': MyClearableFileInput
         }

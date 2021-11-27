@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<h3 class="mt-5 mb-5 text-center">Сотрудник</h3>
+<h3 class="mt-5 mb-5 text-center">Сотрудник {{ employee.surname }}</h3>
 
 <div class="row justify-content-md-center" style="">
     <div class="col col-lg-2 justify-content-center">
@@ -20,6 +20,7 @@
                 {% csrf_token %}
                 {{ form|crispy }}
                 <input type="submit" class="btn btn-warning mt-3 mb-3" value="Сохранить">
+                <a href="{% url 'delete_employee' employee.id %}" class="btn btn-danger m-3">Удалить</a>
             </form>
     </div>
      <div class="col col-lg-2">
