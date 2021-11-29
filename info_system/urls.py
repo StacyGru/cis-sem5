@@ -4,7 +4,8 @@ from .views import(
     MainView,
     ProfileView,
     ClientsView,
-    EmployeesView
+    EmployeesView,
+    # AddEmployeeView
 )
 from django.contrib.auth.views import LogoutView
 from . import views
@@ -17,5 +18,7 @@ urlpatterns = [
     path('clients/', ClientsView.as_view(), name='clients'),
     path('employees/', EmployeesView.as_view(), name='employees'),
     path('employees/edit_employee/<str:pk>/', views.edit_employee, name='edit_employee'),
-    path('employees/delete_employee/<str:pk>/', views.delete_employee, name='delete_employee')
+    path('employees/delete_employee/<str:pk>/', views.delete_employee, name='delete_employee'),
+    path('employees/add_employee/', views.add_employee, name='add_employee')
+    # path('employees/add_employee/', AddEmployeeView.as_view(), name='add_employee')
 ]

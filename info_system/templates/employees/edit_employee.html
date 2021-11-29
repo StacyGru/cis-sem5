@@ -9,11 +9,9 @@
 <div class="row justify-content-md-center" style="">
     <div class="col col-lg-2 justify-content-center">
         {% if employee.photo %}
-                    <img src="{{ employee.photo.url }}" alt="фотография сотрудника" style="max-width: 100%;"><br>
-                    <a href="{{ employee.photo.url }}" download="сотрудник" class="btn btn-secondary btn-sm mt-2">Скачать фотографию</a>
-                {% else %}
-<!--                    <p>У сотрудника нет фотографии</p>-->
-                {% endif %}
+            <img src="{{ employee.photo.url }}" alt="фотография сотрудника" style="max-width: 100%;"><br>
+            <a href="{{ employee.photo.url }}" download="сотрудник" class="btn btn-secondary btn-sm mt-2">Скачать фотографию</a>
+        {% endif %}
         </div>
     <div class="col-lg-6">
             <form action="" method="POST" enctype="multipart/form-data">
