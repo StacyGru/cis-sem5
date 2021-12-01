@@ -15,6 +15,7 @@ from .models import (
     EmployeePosition
 )
 from django.db import transaction
+from django.db.models import Q
 
 
 class MainView(View):
@@ -62,14 +63,22 @@ class ClientsView(View):
 
 class EmployeesView(View):
     def get(self, request, *args, **kwargs):
-        employees = Employee.objects.all()
-        form = EmployeeForm(request.POST or None)
+        search_query = request.GET.get('search', '')
+        filters = request.GET.get('employee_position', '')
+        if search_query and filters:
+            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(first_middle_name__icontains=search_query)
+            employees = employees.filter(position=filters)
+        elif search_query:
+            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(first_middle_name__icontains=search_query)
+        elif filters:
+            employees = Employee.objects.filter(position=filters)
+        else:
+            employees = Employee.objects.all()
         return render(
             request,
             'employees/employees_list.html',
             {
-                'employees': employees,
-                'form': form
+                'employees': employees
             }
         )
 

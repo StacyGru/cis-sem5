@@ -16,6 +16,27 @@
 
 <a class="btn btn-success m-3" href="{% url 'add_employee' %}">Добавить нового сотрудника</a>
 
+<form method="get" action="">
+    <div class="col-6 m-3">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Поиск сотрудников" aria-describedby="button-addon2" name="search">
+            <input class="btn btn-outline-secondary" value="Поиск" type="submit" id="button-addon2"></input>
+          </div>
+
+        <input type="checkbox" id="manager" value="1" class="form-check-input" name="employee_position">
+        <label for="manager" class="form-check-label">Менеджеры</label>
+
+        <input type="checkbox" id="accountant" value="2" class="form-check-input" style="margin-left: 10px"  name="employee_position">
+        <label for="accountant" class="form-check-label">Бухгалтеры</label>
+
+        <input type="checkbox" id="administrator" value="3" class="form-check-input" style="margin-left: 10px"  name="employee_position">
+        <label for="administrator" class="form-check-label">Администраторы</label>
+
+        <input type="checkbox" id="agent" value="4" class="form-check-input" style="margin-left: 10px"  name="employee_position">
+        <label for="agent" class="form-check-label">Агенты</label>
+    </div>
+</form>
+
 
 <div class="row">
     <div class="col-sm-6">
