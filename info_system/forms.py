@@ -1,7 +1,9 @@
 from django import forms
 from django.contrib.auth.models import User
 from .models import (
-    Employee
+    Employee,
+    Client,
+    Passport
 )
 from django.forms.widgets import ClearableFileInput
 from django.utils.translation import ugettext_lazy
@@ -70,6 +72,43 @@ class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee
         fields = ['surname', 'first_middle_name', 'gender', 'position', 'organization', 'date_of_birth', 'photo']
+        widgets = {
+            'date_of_birth': DateInput(),
+        }
+
+
+class ClientForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['surname'].label = 'Фамилия'
+        self.fields['first_middle_name'].label = 'Имя и Отчество'
+        self.fields['gender'].label = 'Пол'
+        self.fields['date_of_birth'].label = 'Дата рождения'
+        self.fields['place_of_birth'].label = 'Место рождения'
+        self.fields['status'].label = 'Статус'
+
+    class Meta:
+        model = Client
+        fields = ['surname', 'first_middle_name', 'gender', 'date_of_birth', 'place_of_birth', 'status']
+        widgets = {
+            'date_of_birth': DateInput(),
+        }
+
+
+class PassportForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['series'].label = 'Серия'
+        self.fields['number'].label = 'Номер'
+        self.fields['passport_type'].label = 'Тип паспорта'
+        self.fields['date_of_issue'].label = 'Дата выдачи'
+        self.fields['expiration_date'].label = 'Выдан'
+        self.fields['issued_by'].label = 'Дата окончания срока действия'
+
+    class Meta:
+        model = Passport
+        fields = ['series', 'number', 'passport_type', 'date_of_issue', 'expiration_date', 'issued_by']
         widgets = {
             'date_of_birth': DateInput(),
         }

@@ -4,18 +4,17 @@ from django.http.response import HttpResponseRedirect
 from django.views.generic import View
 from .forms import (
     LoginForm,
-    EmployeeForm
+    EmployeeForm,
+    ClientForm,
+    PassportForm
 )
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from .models import (
     Client,
     Employee,
-    Organization,
-    EmployeePosition
+    Passport
 )
-from django.db import transaction
-from django.db.models import Q
 
 
 class MainView(View):
@@ -53,11 +52,119 @@ class ProfileView(View):
 
 class ClientsView(View):
     def get(self, request, *args, **kwargs):
-        clients = Client.objects.all()
+        search_query = request.GET.get('search', '')
+        if search_query:
+            clients = Client.objects.filter(surname__icontains=search_query) | Client.objects.filter(first_middle_name__icontains=search_query)
+        else:
+            clients = Client.objects.all()
         return render(
             request,
-            'clients.html',
+            'clients/clients_list.html',
             {'clients': clients}
+        )
+
+
+def edit_client(request, pk):
+    client = Client.objects.get(id=pk)
+    form = ClientForm(instance=client)
+    if request.method == 'POST':
+        form = ClientForm(request.POST, instance=client)
+        if form.is_valid():
+            form.save()
+            messages.add_message(request, messages.INFO, 'Клиент успешно изменён!')
+            return HttpResponseRedirect('/clients')
+        messages.add_message(request, messages.ERROR, 'Не удалось изменить клиента!')
+    return render(
+        request,
+        'clients/edit_client.html',
+        {
+            'client': client,
+            'form': form
+        }
+    )
+
+
+def get_or_none(classmodel, **kwargs):
+    try:
+        return classmodel.objects.get(**kwargs)
+    except classmodel.DoesNotExist:
+        return None
+
+
+def add_client_passport(request, pk):
+    form = PassportForm()
+    if request.method == 'POST':
+        form = PassportForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.add_message(request, messages.INFO, 'Паспортные данные клиента успешно добавлен!')
+            return HttpResponseRedirect('/clients')
+        messages.add_message(request, messages.ERROR, 'Не удалось добавить паспортные данные клиента!')
+    return render(
+            request,
+            'clients/add_client_passport.html',
+            {
+                'form': form
+            }
+        )
+
+
+def edit_client_passport(request, pk):
+    passport = get_or_none(Passport, client=pk)
+    if passport:
+        form = PassportForm(instance=passport)
+        if request.method == 'POST':
+            form = PassportForm(request.POST, instance=passport)
+            if form.is_valid():
+                form.save()
+                messages.add_message(request, messages.INFO, 'Клиент успешно изменён!')
+                return HttpResponseRedirect('/clients')
+            messages.add_message(request, messages.ERROR, 'Не удалось изменить клиента!')
+        return render(
+            request,
+            'clients/edit_client_passport.html',
+            {
+                'passport': passport,
+                'form': form
+            }
+        )
+    else:
+        return render(
+            request,
+            'clients/add_client_passport.html',
+        )
+
+
+def delete_client(request, pk):
+    client = Client.objects.get(id=pk)
+    if request.method == 'POST':
+        client.delete()
+        messages.add_message(request, messages.INFO, 'Клиент успешно удалён!')
+        return HttpResponseRedirect('/clients')
+    return render(
+        request,
+        'clients/delete_client.html',
+        {
+            'client': client
+        }
+    )
+
+
+def add_client(request):
+    form = ClientForm()
+    if request.method == 'POST':
+        form = ClientForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.add_message(request, messages.INFO, 'Клиент успешно добавлен!')
+            return HttpResponseRedirect('/clients')
+        messages.add_message(request, messages.ERROR, 'Не удалось добавить клиента!')
+    return render(
+            request,
+            'clients/add_client.html',
+            {
+                'form': form
+            }
         )
 
 

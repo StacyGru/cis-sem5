@@ -43,7 +43,8 @@ class Client(models.Model):
         db_table = 'client'
 
     def __str__(self):
-        return self.surname
+        return str(self.id)
+        # return self.surname
 
 
 class Organization(models.Model):

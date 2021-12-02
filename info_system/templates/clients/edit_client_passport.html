@@ -1,0 +1,42 @@
+{% extends 'main.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+<h3 class="mt-5 mb-5 text-center">Клиент {{ client.surname }}</h3>
+
+<div class="row justify-content-md-center" style="">
+    <div class="col col-lg-2 justify-content-center">
+        </div>
+    <div class="col-lg-6">
+
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'edit_client' form.instance.client %}">Основные</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'edit_client_passport' form.instance.client %}">Паспортные данные</a>
+                    </li>
+
+                </ul>
+            </div>
+        <div class="card-body ">
+            <form action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <input type="submit" class="btn btn-warning mt-3 mb-3" value="Сохранить">
+            </form>
+        </div>
+        </div>
+
+
+
+    </div>
+    <div class="col col-lg-2">
+        </div>
+</div>
+
+{% endblock %}
