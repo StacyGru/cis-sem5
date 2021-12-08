@@ -24,11 +24,13 @@
                 </ul>
             </div>
         <div class="card-body ">
-            <form action="" method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <input type="submit" class="btn btn-warning mt-3 mb-3" value="Сохранить">
-            </form>
+            {% if passport %}
+                <a href="#">{{ passport.id }}</a>
+<!--            <form action="" method="POST" enctype="multipart/form-data">-->
+<!--                {% csrf_token %}-->
+<!--                {{ form|crispy }}-->
+<!--                <input type="submit" class="btn btn-warning mt-3 mb-3" value="Сохранить">-->
+<!--            </form>-->
         </div>
         </div>
 

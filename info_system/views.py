@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.db import transaction
 from django.shortcuts import render
 from django.http.response import HttpResponseRedirect
 from django.views.generic import View
@@ -154,7 +155,15 @@ def add_client(request):
     form = ClientForm()
     if request.method == 'POST':
         form = ClientForm(request.POST)
+        # passport_form = PassportForm()
         if form.is_valid():
+
+            # passport_instance = passport_form.save(commit=False)
+            # passport_form.save()
+            # client_instance = client_form.save(commit=False)
+            # passport_instance.client = client_instance
+            # passport_instance.save()
+
             form.save()
             messages.add_message(request, messages.INFO, 'Клиент успешно добавлен!')
             return HttpResponseRedirect('/clients')

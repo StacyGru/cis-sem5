@@ -101,6 +101,7 @@ class PassportForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['series'].label = 'Серия'
         self.fields['number'].label = 'Номер'
+        self.fields['client'].label = 'Клиент'
         self.fields['passport_type'].label = 'Тип паспорта'
         self.fields['date_of_issue'].label = 'Дата выдачи'
         self.fields['expiration_date'].label = 'Выдан'
@@ -108,7 +109,7 @@ class PassportForm(forms.ModelForm):
 
     class Meta:
         model = Passport
-        fields = ['series', 'number', 'passport_type', 'date_of_issue', 'expiration_date', 'issued_by']
+        fields = ['series', 'number', 'client', 'passport_type', 'date_of_issue', 'expiration_date', 'issued_by']
         widgets = {
             'date_of_birth': DateInput(),
         }

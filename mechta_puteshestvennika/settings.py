@@ -19,7 +19,10 @@ SECRET_KEY = '-phmfq-9#0of2l9kavul!bvkmo)dd6#ufiz!i$i3@x+3(s&8&w'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'cis-sem5.std-940.ist.mospolytech.ru'
+]
 
 # Application definition
 INSTALLED_APPS = [
@@ -71,12 +74,16 @@ WSGI_APPLICATION = 'mechta_puteshestvennika.wsgi.application'
 
 DATABASES = {
     'default': {
+        # 'ENGINE': 'django.db.backends.mysql',
+        # 'NAME': 'mechta_puteshestvennika',
+        # 'USER': 'root',
+        # 'PASSWORD': '123456',
+        # 'HOST': 'localhost'
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mechta_puteshestvennika',
-        'USER': 'root',
-        'PASSWORD': '123456',
-        'HOST': 'localhost',
-        # 'PORT': 'portNumber',
+        'NAME': 'std_940_cis_sem5',
+        'USER': 'std_940_cis_sem5',
+        'PASSWORD': '12345678',
+        'HOST': 'std-mysql'
     }
 }
 
