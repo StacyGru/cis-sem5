@@ -3,6 +3,7 @@ from django.db import transaction
 from django.shortcuts import render
 from django.http.response import HttpResponseRedirect
 from django.views.generic import View
+from django.core.exceptions import ObjectDoesNotExist
 from .forms import (
     LoginForm,
     EmployeeForm,
@@ -68,6 +69,10 @@ class ClientsView(View):
 def edit_client(request, pk):
     client = Client.objects.get(id=pk)
     form = ClientForm(instance=client)
+    try:
+        passport = Passport.objects.get(client=pk)
+    except ObjectDoesNotExist:
+        passport = None
     if request.method == 'POST':
         form = ClientForm(request.POST, instance=client)
         if form.is_valid():
@@ -80,20 +85,27 @@ def edit_client(request, pk):
         'clients/edit_client.html',
         {
             'client': client,
-            'form': form
+            'form': form,
+            'passport': passport
         }
     )
 
 
-def get_or_none(classmodel, **kwargs):
-    try:
-        return classmodel.objects.get(**kwargs)
-    except classmodel.DoesNotExist:
-        return None
+# def get_or_none(classmodel, **kwargs):
+#     try:
+#         passport_exists = True
+#         return classmodel.objects.get(**kwargs)
+#     except classmodel.DoesNotExist:
+#         passport_exists = False
+#         return None
 
 
 def add_client_passport(request, pk):
-    form = PassportForm()
+    form = PassportForm(initial=
+        {
+            'client': pk
+        }
+    )
     if request.method == 'POST':
         form = PassportForm(request.POST)
         if form.is_valid():
@@ -111,7 +123,11 @@ def add_client_passport(request, pk):
 
 
 def edit_client_passport(request, pk):
-    passport = get_or_none(Passport, client=pk)
+    try:
+        passport = Passport.objects.get(client=pk)
+    except ObjectDoesNotExist:
+        passport = None
+    client = Client.objects.get(id=pk)
     if passport:
         form = PassportForm(instance=passport)
         if request.method == 'POST':
@@ -126,6 +142,7 @@ def edit_client_passport(request, pk):
             'clients/edit_client_passport.html',
             {
                 'passport': passport,
+                'client': client,
                 'form': form
             }
         )
@@ -133,6 +150,9 @@ def edit_client_passport(request, pk):
         return render(
             request,
             'clients/add_client_passport.html',
+            {
+                'client': client
+            }
         )
 
 

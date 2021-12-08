@@ -7,6 +7,12 @@ GENDER_CHOICES = [
 ]
 
 
+PASSPORT_TYPE_CHOICES = [
+    ('российский', 'российский'),
+    ('заграничный', 'заграничный')
+]
+
+
 class City(models.Model):
     city = models.CharField(max_length=64)
     country = models.CharField(max_length=64)
@@ -153,7 +159,7 @@ class Passport(models.Model):
     series = models.IntegerField()
     number = models.IntegerField()
     client = models.ForeignKey(Client, models.DO_NOTHING)
-    passport_type = models.CharField(max_length=11)
+    passport_type = models.CharField(max_length=15, choices=PASSPORT_TYPE_CHOICES)
     date_of_issue = models.DateField()
     expiration_date = models.DateField()
     issued_by = models.CharField(max_length=256)

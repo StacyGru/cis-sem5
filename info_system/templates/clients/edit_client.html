@@ -11,14 +11,19 @@
         </div>
     <div class="col-lg-6">
 
-        <div class="card">
+        <div class="card mb-3">
             <div class="card-header">
                 <ul class="nav nav-tabs card-header-tabs">
                     <li class="nav-item">
                         <a class="nav-link active" href="{% url 'edit_client' client.id %}">Основные</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'edit_client_passport' client.id %}">Паспортные данные</a>
+                        {% if passport is None%}
+                            <a class="nav-link" href="{% url 'add_client_passport' client.id %}">Паспортные данные</a>
+
+                        {% else %}
+                            <a class="nav-link" href="{% url 'edit_client_passport' client.id %}">Паспортные данные</a>
+                        {% endif %}
                     </li>
 
                 </ul>
@@ -27,8 +32,8 @@
             <form action="" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form|crispy }}
-                <input type="submit" class="btn btn-warning mt-3 mb-3" value="Сохранить">
-                <a href="{% url 'delete_client' client.id %}" class="btn btn-danger m-3">Удалить</a>
+                <input type="submit" class="btn btn-warning mt-3" value="Сохранить">
+                <a href="{% url 'delete_client' client.id %}" class="btn btn-danger mt-3 ml-5">Удалить</a>
             </form>
         </div>
         </div>

@@ -111,5 +111,8 @@ class PassportForm(forms.ModelForm):
         model = Passport
         fields = ['series', 'number', 'client', 'passport_type', 'date_of_issue', 'expiration_date', 'issued_by']
         widgets = {
-            'date_of_birth': DateInput(),
+            'date_of_issue': DateInput(),
+            'expiration_date': DateInput(),
+            'issued_by': DateInput(),
+            'client': forms.HiddenInput()
         }
