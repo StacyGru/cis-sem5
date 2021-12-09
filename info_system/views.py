@@ -1,5 +1,4 @@
 from django.contrib import messages
-from django.db import transaction
 from django.shortcuts import render
 from django.http.response import HttpResponseRedirect
 from django.views.generic import View
@@ -21,7 +20,9 @@ from .models import (
 
 class MainView(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'main.html', {})
+        return render(
+            request, 'main.html', {}
+        )
 
 
 class LoginView(View):
@@ -52,6 +53,9 @@ class ProfileView(View):
         )
 
 
+# -----------------------------------------------------АДМИНИСТРАТОР----------------------------------------------------
+
+
 class ClientsView(View):
     def get(self, request, *args, **kwargs):
         search_query = request.GET.get('search', '')
@@ -61,7 +65,7 @@ class ClientsView(View):
             clients = Client.objects.all()
         return render(
             request,
-            'clients/clients_list.html',
+            'administrator/clients/clients_list.html',
             {'clients': clients}
         )
 
@@ -82,22 +86,13 @@ def edit_client(request, pk):
         messages.add_message(request, messages.ERROR, 'Не удалось изменить клиента!')
     return render(
         request,
-        'clients/edit_client.html',
+        'administrator/clients/edit_client.html',
         {
             'client': client,
             'form': form,
             'passport': passport
         }
     )
-
-
-# def get_or_none(classmodel, **kwargs):
-#     try:
-#         passport_exists = True
-#         return classmodel.objects.get(**kwargs)
-#     except classmodel.DoesNotExist:
-#         passport_exists = False
-#         return None
 
 
 def add_client_passport(request, pk):
@@ -115,7 +110,7 @@ def add_client_passport(request, pk):
         messages.add_message(request, messages.ERROR, 'Не удалось добавить паспортные данные клиента!')
     return render(
             request,
-            'clients/add_client_passport.html',
+            'administrator/clients/add_client_passport.html',
             {
                 'form': form
             }
@@ -139,7 +134,7 @@ def edit_client_passport(request, pk):
             messages.add_message(request, messages.ERROR, 'Не удалось изменить клиента!')
         return render(
             request,
-            'clients/edit_client_passport.html',
+            'administrator/clients/edit_client_passport.html',
             {
                 'passport': passport,
                 'client': client,
@@ -149,7 +144,7 @@ def edit_client_passport(request, pk):
     else:
         return render(
             request,
-            'clients/add_client_passport.html',
+            'administrator/clients/add_client_passport.html',
             {
                 'client': client
             }
@@ -164,7 +159,7 @@ def delete_client(request, pk):
         return HttpResponseRedirect('/clients')
     return render(
         request,
-        'clients/delete_client.html',
+        'administrator/clients/delete_client.html',
         {
             'client': client
         }
@@ -175,22 +170,14 @@ def add_client(request):
     form = ClientForm()
     if request.method == 'POST':
         form = ClientForm(request.POST)
-        # passport_form = PassportForm()
         if form.is_valid():
-
-            # passport_instance = passport_form.save(commit=False)
-            # passport_form.save()
-            # client_instance = client_form.save(commit=False)
-            # passport_instance.client = client_instance
-            # passport_instance.save()
-
             form.save()
             messages.add_message(request, messages.INFO, 'Клиент успешно добавлен!')
             return HttpResponseRedirect('/clients')
         messages.add_message(request, messages.ERROR, 'Не удалось добавить клиента!')
     return render(
             request,
-            'clients/add_client.html',
+            'administrator/clients/add_client.html',
             {
                 'form': form
             }
@@ -212,7 +199,7 @@ class EmployeesView(View):
             employees = Employee.objects.all()
         return render(
             request,
-            'employees/employees_list.html',
+            'administrator/employees/employees_list.html',
             {
                 'employees': employees
             }
@@ -231,7 +218,7 @@ def edit_employee(request, pk):
         messages.add_message(request, messages.ERROR, 'Не удалось изменить сотрудника!')
     return render(
         request,
-        'employees/edit_employee.html',
+        'administrator/employees/edit_employee.html',
         {
             'employee': employee,
             'form': form
@@ -247,7 +234,7 @@ def delete_employee(request, pk):
         return HttpResponseRedirect('/employees')
     return render(
         request,
-        'employees/delete_employee.html',
+        'administrator/employees/delete_employee.html',
         {
             'employee': employee
         }
@@ -265,8 +252,98 @@ def add_employee(request):
         messages.add_message(request, messages.ERROR, 'Не удалось добавить сотрудника!')
     return render(
             request,
-            'employees/add_employee.html',
+            'administrator/employees/add_employee.html',
             {
                 'form': form
             }
         )
+
+
+# -------------------------------------------------------БУХГАЛТЕР------------------------------------------------------
+
+
+class AccountantClientsView(View):
+    def get(self, request, *args, **kwargs):
+        search_query = request.GET.get('search', '')
+        if search_query:
+            clients = Client.objects.filter(surname__icontains=search_query) | Client.objects.filter(first_middle_name__icontains=search_query)
+        else:
+            clients = Client.objects.all()
+        return render(
+            request,
+            'accountant/clients/clients_list.html',
+            {'clients': clients}
+        )
+
+
+class AccountantEmployeesView(View):
+    def get(self, request, *args, **kwargs):
+        search_query = request.GET.get('search', '')
+        filters = request.GET.get('employee_position', '')
+        if search_query and filters:
+            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(first_middle_name__icontains=search_query)
+            employees = employees.filter(position=filters)
+        elif search_query:
+            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(first_middle_name__icontains=search_query)
+        elif filters:
+            employees = Employee.objects.filter(position=filters)
+        else:
+            employees = Employee.objects.all()
+        return render(
+            request,
+            'accountant/employees/employees_list.html',
+            {
+                'employees': employees
+            }
+        )
+
+
+# -------------------------------------------------------МЕНЕДЖЕР-------------------------------------------------------
+
+
+class ManagerEmployeesView(View):
+    def get(self, request, *args, **kwargs):
+        search_query = request.GET.get('search', '')
+        filters = request.GET.get('employee_position', '')
+        if search_query and filters:
+            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(first_middle_name__icontains=search_query)
+            employees = employees.filter(position=filters)
+        elif search_query:
+            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(first_middle_name__icontains=search_query)
+        elif filters:
+            employees = Employee.objects.filter(position=filters)
+        else:
+            employees = Employee.objects.all()
+        return render(
+            request,
+            'manager/employees/employees_list.html',
+            {
+                'employees': employees
+            }
+        )
+
+
+# -------------------------------------------------------МЕНЕДЖЕР-------------------------------------------------------
+
+
+class AgentEmployeesView(View):
+    def get(self, request, *args, **kwargs):
+        search_query = request.GET.get('search', '')
+        filters = request.GET.get('employee_position', '')
+        if search_query and filters:
+            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(first_middle_name__icontains=search_query)
+            employees = employees.filter(position=filters)
+        elif search_query:
+            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(first_middle_name__icontains=search_query)
+        elif filters:
+            employees = Employee.objects.filter(position=filters)
+        else:
+            employees = Employee.objects.all()
+        return render(
+            request,
+            'agent/employees/employees_list.html',
+            {
+                'employees': employees
+            }
+        )
+
