@@ -1,0 +1,28 @@
+{% extends 'main.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+<h3 class="mt-5 mb-5 text-center">Сотрудник {{ employee.surname }}</h3>
+
+<div class="row justify-content-md-center" style="">
+    <div class="col col-lg-2 justify-content-center">
+        {% if employee.photo %}
+            <img src="{{ employee.photo.url }}" alt="фотография сотрудника" style="max-width: 100%;"><br>
+            <a href="{{ employee.photo.url }}" download="сотрудник" class="btn btn-secondary btn-sm mt-2">Скачать фотографию</a>
+        {% endif %}
+        </div>
+    <div class="col-lg-6">
+            <form action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <input type="submit" class="btn btn-warning mt-3 mb-3" value="Сохранить">
+                <a href="{% url 'delete_employee' employee.id %}" class="btn btn-danger m-3">Удалить</a>
+            </form>
+    </div>
+     <div class="col col-lg-2">
+        </div>
+</div>
+
+{% endblock %}
