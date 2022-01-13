@@ -7,14 +7,16 @@ from .forms import (
     LoginForm,
     EmployeeForm,
     ClientForm,
-    PassportForm
+    PassportForm,
+    PreliminaryAgreementForm
 )
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from .models import (
     Client,
     Employee,
-    Passport
+    Passport,
+    PreliminaryAgreement
 )
 
 
@@ -258,6 +260,68 @@ def add_employee(request):
             }
         )
 
+
+class PreliminaryAgreementsView(View):
+    def get(self, request, *args, **kwargs):
+        preliminary_agreements = PreliminaryAgreement.objects.all()
+        return render(
+            request,
+            'administrator/preliminary_agreements/preliminary_agreements_list.html',
+            {'preliminary_agreements': preliminary_agreements}
+        )
+
+
+def edit_preliminary_agreement(request, pk):
+    preliminary_agreement = PreliminaryAgreement.objects.get(id=pk)
+    form = PreliminaryAgreementForm(instance=preliminary_agreement)
+    if request.method == 'POST':
+        form = PreliminaryAgreementForm(request.POST, instance=preliminary_agreement)
+        if form.is_valid():
+            form.save()
+            messages.add_message(request, messages.INFO, 'Предварительное соглашение успешно изменено!')
+            return HttpResponseRedirect('/preliminary_agreements')
+        messages.add_message(request, messages.ERROR, 'Не удалось изменить предварительное соглашение!')
+    return render(
+        request,
+        'administrator/preliminary_agreements/edit_preliminary_agreement.html',
+        {
+            'preliminary_agreement': preliminary_agreement,
+            'form': form
+        }
+    )
+
+
+def delete_preliminary_agreement(request, pk):
+    preliminary_agreement = PreliminaryAgreement.objects.get(id=pk)
+    if request.method == 'POST':
+        preliminary_agreement.delete()
+        messages.add_message(request, messages.INFO, 'Предварительное соглашение успешно удалено!')
+        return HttpResponseRedirect('/preliminary_agreements')
+    return render(
+        request,
+        'administrator/preliminary_agreements/delete_preliminary_agreement.html',
+        {
+            'preliminary_agreement': preliminary_agreement
+        }
+    )
+
+
+def add_preliminary_agreement(request):
+    form = PreliminaryAgreementForm()
+    if request.method == 'POST':
+        form = PreliminaryAgreementForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.add_message(request, messages.INFO, 'Предварительное соглашение успешно добавлено!')
+            return HttpResponseRedirect('/preliminary_agreements')
+        messages.add_message(request, messages.ERROR, 'Не удалось добавить предварительное соглашение!')
+    return render(
+            request,
+            'administrator/preliminary_agreements/add_preliminary_agreement.html',
+            {
+                'form': form
+            }
+        )
 
 # -------------------------------------------------------БУХГАЛТЕР------------------------------------------------------
 

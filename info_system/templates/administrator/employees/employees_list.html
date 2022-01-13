@@ -1,5 +1,4 @@
 {% extends 'main.html' %}
-{% load crispy_forms_tags %}
 
 {% block content %}
 
@@ -18,22 +17,22 @@
 
 <form method="get" action="">
     <div class="col-6 m-3">
-        <div class="input-group mb-3">
+        <div class="input-group mb-3" style="margin-left: -15px;">
             <input type="text" class="form-control" placeholder="Поиск сотрудников" aria-describedby="button-addon2" name="search">
             <input class="btn btn-outline-secondary" value="Поиск" type="submit" id="button-addon2"></input>
           </div>
 
-        <input type="checkbox" id="manager" value="1" class="form-check-input" name="employee_position">
-        <label for="manager" class="form-check-label">Менеджеры</label>
+        <input type="checkbox" id="manager" value="1" class="form-check-input" name="employee_position" style="margin-left: -15px;">
+        <label for="manager" class="form-check-label" style="margin-left: 5px;">Менеджеры</label>
 
-        <input type="checkbox" id="accountant" value="2" class="form-check-input" style="margin-left: 10px"  name="employee_position">
-        <label for="accountant" class="form-check-label">Бухгалтеры</label>
+        <input type="checkbox" id="accountant" value="2" class="form-check-input" name="employee_position" style="margin-left: 10px;">
+        <label for="accountant" class="form-check-label" style="margin-left: 30px;">Бухгалтеры</label>
 
-        <input type="checkbox" id="administrator" value="3" class="form-check-input" style="margin-left: 10px"  name="employee_position">
-        <label for="administrator" class="form-check-label">Администраторы</label>
+        <input type="checkbox" id="administrator" value="3" class="form-check-input" name="employee_position" style="margin-left: 10px;">
+        <label for="administrator" class="form-check-label" style="margin-left: 30px;">Администраторы</label>
 
-        <input type="checkbox" id="agent" value="4" class="form-check-input" style="margin-left: 10px"  name="employee_position">
-        <label for="agent" class="form-check-label">Агенты</label>
+        <input type="checkbox" id="agent" value="4" class="form-check-input" name="employee_position" style="margin-left: 10px;">
+        <label for="agent" class="form-check-label" style="margin-left: 30px;">Агенты</label>
     </div>
 </form>
 

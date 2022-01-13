@@ -1,5 +1,7 @@
 from pathlib import Path
 import os
+from typing import Tuple
+
 from django.contrib.messages import constants as message_constants
 
 MESSAGE_TAGS = {message_constants.DEBUG: 'debug',
@@ -35,8 +37,14 @@ INSTALLED_APPS = [
     'info_system.apps.InfoSystemConfig',
     'rest_framework',
     'crispy_forms',
-    'django.forms'
+    'django.forms',
+    'bootstrap_datepicker_plus',
+    'bootstrap4'
 ]
+
+BOOTSTRAP4 = {
+    'include_jquery': True,
+}
 
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 

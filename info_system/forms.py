@@ -1,9 +1,13 @@
+from bootstrap_datepicker_plus import DateTimePickerInput
 from django import forms
 from django.contrib.auth.models import User
+
+from mechta_puteshestvennika import settings
 from .models import (
     Employee,
     Client,
-    Passport
+    Passport,
+    PreliminaryAgreement
 )
 from django.forms.widgets import ClearableFileInput
 from django.utils.translation import ugettext_lazy
@@ -73,7 +77,12 @@ class EmployeeForm(forms.ModelForm):
         model = Employee
         fields = ['surname', 'first_middle_name', 'gender', 'position', 'organization', 'date_of_birth', 'photo']
         widgets = {
-            'date_of_birth': DateInput(),
+            'date_of_birth': DateTimePickerInput(
+                options={
+                    "locale": 'ru',
+                    "format": 'YYYY-MM-DD'
+                }
+            )
         }
 
 
@@ -92,7 +101,12 @@ class ClientForm(forms.ModelForm):
         model = Client
         fields = ['surname', 'first_middle_name', 'gender', 'date_of_birth', 'place_of_birth', 'status']
         widgets = {
-            'date_of_birth': DateInput(),
+            'date_of_birth': DateTimePickerInput(
+                options={
+                    "locale": 'ru',
+                    "format": 'YYYY-MM-DD'
+                }
+            )
         }
 
 
@@ -111,8 +125,62 @@ class PassportForm(forms.ModelForm):
         model = Passport
         fields = ['series', 'number', 'client', 'passport_type', 'date_of_issue', 'expiration_date', 'issued_by']
         widgets = {
-            'date_of_issue': DateInput(),
-            'expiration_date': DateInput(),
-            'issued_by': DateInput(),
+            'date_of_issue': DateTimePickerInput(
+                options={
+                    "locale": 'ru',
+                    "format": 'YYYY-MM-DD'
+                }
+            ),
+            'expiration_date': DateTimePickerInput(
+                options={
+                    "locale": 'ru',
+                    "format": 'YYYY-MM-DD'
+                }
+            ),
+            'issued_by': DateTimePickerInput(
+                options={
+                    "locale": 'ru',
+                    "format": 'YYYY-MM-DD'
+                }
+            ),
             'client': forms.HiddenInput()
+        }
+
+
+class PreliminaryAgreementForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['date_time'].label = 'Дата и время'
+        self.fields['organization'].label = 'Организация'
+        self.fields['employee'].label = 'Сотрудник'
+        self.fields['client'].label = 'Клиент'
+        self.fields['number_of_trip_participants'].label = 'Количество участников поездки'
+        self.fields['country_of_visit'].label = 'Страна посещения'
+        self.fields['trip_start_date'].label = 'Дата начала поездки'
+        self.fields['trip_end_date'].label = 'Дата окончания поездки'
+        self.fields['cities_to_visit'].label = 'Города посещения'
+
+    class Meta:
+        model = PreliminaryAgreement
+        fields = ['date_time', 'organization', 'employee', 'client', 'number_of_trip_participants', 'country_of_visit', 'trip_start_date', 'trip_end_date', 'cities_to_visit']
+        widgets = {
+            'date_time': DateTimePickerInput(
+                options={
+                    "locale": 'ru',
+                    "format": 'YYYY-MM-DD HH:mm:ss',
+                    "collapse": True
+                }
+            ),
+            'trip_start_date': DateTimePickerInput(
+                options={
+                    "locale": 'ru',
+                    "format": 'YYYY-MM-DD',
+                }
+            ),
+            'trip_end_date': DateTimePickerInput(
+                options={
+                    "locale": 'ru',
+                    "format": 'YYYY-MM-DD'
+                }
+            )
         }

@@ -1,6 +1,8 @@
 {% extends 'main.html' %}
-{% load crispy_forms_tags %}
 {% load static %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
 
 {% block content %}
 
@@ -16,7 +18,8 @@
     <div class="col-lg-6">
             <form action="" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
-                {{ form|crispy }}
+                {{ form.media }}
+                {% bootstrap_form form %}
                 <input type="submit" class="btn btn-warning mt-3 mb-3" value="Сохранить">
                 <a href="{% url 'delete_employee' employee.id %}" class="btn btn-danger m-3">Удалить</a>
             </form>

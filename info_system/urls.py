@@ -8,7 +8,8 @@ from .views import(
     AccountantClientsView,
     AccountantEmployeesView,
     ManagerEmployeesView,
-    AgentEmployeesView
+    AgentEmployeesView,
+    PreliminaryAgreementsView
 )
 from django.contrib.auth.views import LogoutView
 from . import views
@@ -31,6 +32,11 @@ urlpatterns = [
     path('employees/edit_employee/<str:pk>/', views.edit_employee, name='edit_employee'),
     path('employees/delete_employee/<str:pk>/', views.delete_employee, name='delete_employee'),
     path('employees/add_employee/', views.add_employee, name='add_employee'),
+
+    path('preliminary_agreements/', PreliminaryAgreementsView.as_view(), name='preliminary_agreements'),
+    path('preliminary_agreements/edit_preliminary_agreement/<str:pk>/', views.edit_preliminary_agreement, name='edit_preliminary_agreement'),
+    path('preliminary_agreements/delete_preliminary_agreement/<str:pk>/', views.delete_preliminary_agreement, name='delete_preliminary_agreement'),
+    path('preliminary_agreements/add_preliminary_agreement/', views.add_preliminary_agreement, name='add_preliminary_agreement'),
 
     # ------------------------------------------------БУХГАЛТЕР---------------------------------------------------------
     path('accountant/clients/', AccountantClientsView.as_view(), name='accountant/clients'),
