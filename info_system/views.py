@@ -8,7 +8,8 @@ from .forms import (
     EmployeeForm,
     ClientForm,
     PassportForm,
-    PreliminaryAgreementForm
+    PreliminaryAgreementForm,
+    ContractForm
 )
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
@@ -16,7 +17,8 @@ from .models import (
     Client,
     Employee,
     Passport,
-    PreliminaryAgreement
+    PreliminaryAgreement,
+    Contract
 )
 
 
@@ -283,7 +285,7 @@ def edit_preliminary_agreement(request, pk):
         messages.add_message(request, messages.ERROR, 'Не удалось изменить предварительное соглашение!')
     return render(
         request,
-        'administrator/preliminary_agreements/edit_preliminary_agreement.html',
+        'administrator/preliminary_agreements/edit_contract.html',
         {
             'preliminary_agreement': preliminary_agreement,
             'form': form
@@ -299,7 +301,7 @@ def delete_preliminary_agreement(request, pk):
         return HttpResponseRedirect('/preliminary_agreements')
     return render(
         request,
-        'administrator/preliminary_agreements/delete_preliminary_agreement.html',
+        'administrator/preliminary_agreements/delete_contract.html',
         {
             'preliminary_agreement': preliminary_agreement
         }
@@ -317,7 +319,70 @@ def add_preliminary_agreement(request):
         messages.add_message(request, messages.ERROR, 'Не удалось добавить предварительное соглашение!')
     return render(
             request,
-            'administrator/preliminary_agreements/add_preliminary_agreement.html',
+            'administrator/preliminary_agreements/add_contract.html',
+            {
+                'form': form
+            }
+        )
+
+
+class ContractsView(View):
+    def get(self, request, *args, **kwargs):
+        contracts = Contract.objects.all()
+        return render(
+            request,
+            'administrator/contracts/contracts_list.html',
+            {'contracts': contracts}
+        )
+
+
+def edit_contract(request, pk):
+    contract = Contract.objects.get(id=pk)
+    form = ContractForm(instance=contract)
+    if request.method == 'POST':
+        form = ContractForm(request.POST, instance=contract)
+        if form.is_valid():
+            form.save()
+            messages.add_message(request, messages.INFO, 'Договор успешно изменён!')
+            return HttpResponseRedirect('/contracts')
+        messages.add_message(request, messages.ERROR, 'Не удалось изменить договор!')
+    return render(
+        request,
+        'administrator/contracts/edit_contract.html',
+        {
+            'contract': contract,
+            'form': form
+        }
+    )
+
+
+def delete_contract(request, pk):
+    contract = Contract.objects.get(id=pk)
+    if request.method == 'POST':
+        contract.delete()
+        messages.add_message(request, messages.INFO, 'Договор успешно удалён!')
+        return HttpResponseRedirect('/contracts')
+    return render(
+        request,
+        'administrator/contracts/delete_contract.html',
+        {
+            'contract': contract
+        }
+    )
+
+
+def add_contract(request):
+    form = ContractForm()
+    if request.method == 'POST':
+        form = ContractForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.add_message(request, messages.INFO, 'Договор успешно добавлен!')
+            return HttpResponseRedirect('/contracts')
+        messages.add_message(request, messages.ERROR, 'Не удалось добавить договор!')
+    return render(
+            request,
+            'administrator/contracts/add_contract.html',
             {
                 'form': form
             }

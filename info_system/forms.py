@@ -1,13 +1,12 @@
 from bootstrap_datepicker_plus import DateTimePickerInput
 from django import forms
 from django.contrib.auth.models import User
-
-from mechta_puteshestvennika import settings
 from .models import (
     Employee,
     Client,
     Passport,
-    PreliminaryAgreement
+    PreliminaryAgreement,
+    Contract
 )
 from django.forms.widgets import ClearableFileInput
 from django.utils.translation import ugettext_lazy
@@ -181,6 +180,31 @@ class PreliminaryAgreementForm(forms.ModelForm):
                 options={
                     "locale": 'ru',
                     "format": 'YYYY-MM-DD'
+                }
+            )
+        }
+
+
+class ContractForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['date_time'].label = 'Дата и время'
+        self.fields['preliminary_agreement_number'].label = 'Номер предварительного соглашения'
+        self.fields['organization'].label = 'Организация'
+        self.fields['employee'].label = 'Сотрудник'
+        self.fields['trip_participants'].label = 'Участники поездки'
+        self.fields['currency'].label = 'Валюта'
+        self.fields['sum'].label = 'Сумма'
+
+    class Meta:
+        model = Contract
+        fields = ['date_time', 'preliminary_agreement_number', 'organization', 'employee', 'trip_participants', 'currency', 'sum']
+        widgets = {
+            'date_time': DateTimePickerInput(
+                options={
+                    "locale": 'ru',
+                    "format": 'YYYY-MM-DD HH:mm:ss',
+                    "collapse": True
                 }
             )
         }
