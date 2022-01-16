@@ -13,6 +13,14 @@
     <div class="col col-lg-2 justify-content-center">
         </div>
     <div class="col-lg-6">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show mt-3" role="alert">
+                        <strong>{{ message }}</strong>
+                        <button type="button" class="btn-close" onclick="this.parentElement.style.display='none';"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
             <form action="" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form.media }}
@@ -23,5 +31,27 @@
      <div class="col col-lg-2">
         </div>
 </div>
+<!--<script>-->
+<!--    $(function () {    -->
+<!--         var start_date = $('#start_date').val() != "" ? new Date($('#start_date').val()) : false;-->
+<!--         var end_date = $('#end_date').val() != "" ? new Date($('#end_date').val()) : false;-->
+<!--                $('#start_date').datetimepicker({-->
+<!--                maxDate: end_date-->
+<!--                });-->
+<!--                -->
+<!--                $('#end_date').datetimepicker({-->
+<!--                  useCurrent: false, //Important! See issue #1075-->
+<!--                  minDate: start_date-->
+<!--                });-->
+<!--                -->
+<!--                $("#start_date").on("dp.change", function (e) {-->
+<!--                  $('#end_date').data("DateTimePicker").minDate(e.date);-->
+<!--                });      -->
+<!--                -->
+<!--                $("#end_date").on("dp.change", function (e) {-->
+<!--                    $('#start_date').data("DateTimePicker").maxDate(e.date);-->
+<!--                });-->
+<!--            });-->
+<!--</script>-->
 
 {% endblock %}

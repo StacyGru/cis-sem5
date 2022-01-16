@@ -13,9 +13,20 @@ PASSPORT_TYPE_CHOICES = [
 ]
 
 
+class Country(models.Model):
+    name = models.CharField(max_length=128)
+
+    class Meta:
+        managed = False
+        db_table = 'country'
+
+    def __str__(self):
+        return self.name
+
+
 class City(models.Model):
     city = models.CharField(max_length=64)
-    country = models.CharField(max_length=64)
+    country = models.ForeignKey(Country, models.DO_NOTHING, db_column='country')
 
     class Meta:
         managed = False
@@ -185,16 +196,28 @@ class Payment(models.Model):
         return self.contract_number
 
 
+class TravelRoute(models.Model):
+    preliminary_agreement_number = models.ForeignKey('PreliminaryAgreement', models.DO_NOTHING, db_column='preliminary_agreement_number')
+    city_to_visit = models.ForeignKey(City, models.DO_NOTHING, db_column='city_to_visit')
+    cities_order = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'travel_route'
+
+    def __str__(self):
+        return str(self.city_to_visit)
+
+
 class PreliminaryAgreement(models.Model):
     date_time = models.DateTimeField(db_column='date&time')  # Field renamed to remove unsuitable characters.
     organization = models.ForeignKey(Organization, models.DO_NOTHING, db_column='organization')
     employee = models.ForeignKey(Employee, models.DO_NOTHING, db_column='employee')
     client = models.ForeignKey(Client, models.DO_NOTHING, db_column='client')
     number_of_trip_participants = models.IntegerField()
-    country_of_visit = models.CharField(max_length=64)
+    country_to_visit = models.ForeignKey(Country, models.DO_NOTHING, db_column='country_to_visit', blank=True, null=True)
     trip_start_date = models.DateField()
     trip_end_date = models.DateField()
-    cities_to_visit = models.ForeignKey(City, models.DO_NOTHING, db_column='cities_to_visit')
 
     class Meta:
         managed = False

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import (
     City,
+    Country,
     Client,
     ClientStatus,
     Contract,
@@ -13,6 +14,7 @@ from .models import (
     Passport,
     Payment,
     PreliminaryAgreement,
+    TravelRoute,
     Synchronization,
     Trip
 )
@@ -21,6 +23,12 @@ from .models import (
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
         model = City
+        fields = '__all__'
+
+
+class CountrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Country
         fields = '__all__'
 
 
@@ -93,6 +101,12 @@ class PaymentSerializer(serializers.ModelSerializer):
 class PreliminaryAgreementSerializer(serializers.ModelSerializer):
     class Meta:
         model = PreliminaryAgreement
+        fields = '__all__'
+
+
+class TravelRouteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TravelRoute
         fields = '__all__'
 
 

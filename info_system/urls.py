@@ -36,6 +36,11 @@ urlpatterns = [
 
     path('preliminary_agreements/', PreliminaryAgreementsView.as_view(), name='preliminary_agreements'),
     path('preliminary_agreements/edit_preliminary_agreement/<str:pk>/', views.edit_preliminary_agreement, name='edit_preliminary_agreement'),
+    path('preliminary_agreements/cities_to_visit/cities_to_visit_list/<str:pk>/', views.get_cities_to_visit, name='cities_to_visit_list'),
+    path('preliminary_agreements/cities_to_visit/delete_city_to_visit/<str:pk>/', views.delete_city_to_visit, name='delete_city_to_visit'),
+    path('preliminary_agreements/cities_to_visit/add_city_to_visit/<str:pk>/', views.add_city_to_visit, name='add_city_to_visit'),
+    path('preliminary_agreements/cities_to_visit/choose_country_to_visit/<str:pk>/', views.choose_country_to_visit, name='choose_country_to_visit'),
+    path('preliminary_agreements/cities_to_visit/clear_country_to_visit/<str:pk>/', views.clear_country_to_visit, name='clear_country_to_visit'),
     path('preliminary_agreements/delete_preliminary_agreement/<str:pk>/', views.delete_preliminary_agreement, name='delete_preliminary_agreement'),
     path('preliminary_agreements/add_preliminary_agreement/', views.add_preliminary_agreement, name='add_preliminary_agreement'),
 

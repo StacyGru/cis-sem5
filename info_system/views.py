@@ -1,5 +1,7 @@
+from audioop import reverse
+
 from django.contrib import messages
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http.response import HttpResponseRedirect
 from django.views.generic import View
 from django.core.exceptions import ObjectDoesNotExist
@@ -9,7 +11,9 @@ from .forms import (
     ClientForm,
     PassportForm,
     PreliminaryAgreementForm,
-    ContractForm
+    ContractForm,
+    CountryToVisitForm,
+    CitiesToVisitForm
 )
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
@@ -18,7 +22,10 @@ from .models import (
     Employee,
     Passport,
     PreliminaryAgreement,
-    Contract
+    Contract,
+    City,
+    Country,
+    TravelRoute
 )
 
 
@@ -50,7 +57,7 @@ class LoginView(View):
 
 class ProfileView(View):
     def get(self, request, *args, **kwargs):
-        user = User.objects.get(pk = request.user.pk)
+        user = User.objects.get(pk=request.user.pk)
         return render(
             request,
             'profile.html',
@@ -64,7 +71,8 @@ class ClientsView(View):
     def get(self, request, *args, **kwargs):
         search_query = request.GET.get('search', '')
         if search_query:
-            clients = Client.objects.filter(surname__icontains=search_query) | Client.objects.filter(first_middle_name__icontains=search_query)
+            clients = Client.objects.filter(surname__icontains=search_query) | Client.objects.filter(
+                first_middle_name__icontains=search_query)
         else:
             clients = Client.objects.all()
         return render(
@@ -100,11 +108,7 @@ def edit_client(request, pk):
 
 
 def add_client_passport(request, pk):
-    form = PassportForm(initial=
-        {
-            'client': pk
-        }
-    )
+    form = PassportForm(initial={'client': pk})
     if request.method == 'POST':
         form = PassportForm(request.POST)
         if form.is_valid():
@@ -113,12 +117,12 @@ def add_client_passport(request, pk):
             return HttpResponseRedirect('/clients')
         messages.add_message(request, messages.ERROR, 'Не удалось добавить паспортные данные клиента!')
     return render(
-            request,
-            'administrator/clients/add_client_passport.html',
-            {
-                'form': form
-            }
-        )
+        request,
+        'administrator/clients/add_client_passport.html',
+        {
+            'form': form
+        }
+    )
 
 
 def edit_client_passport(request, pk):
@@ -180,12 +184,12 @@ def add_client(request):
             return HttpResponseRedirect('/clients')
         messages.add_message(request, messages.ERROR, 'Не удалось добавить клиента!')
     return render(
-            request,
-            'administrator/clients/add_client.html',
-            {
-                'form': form
-            }
-        )
+        request,
+        'administrator/clients/add_client.html',
+        {
+            'form': form
+        }
+    )
 
 
 class EmployeesView(View):
@@ -193,10 +197,12 @@ class EmployeesView(View):
         search_query = request.GET.get('search', '')
         filters = request.GET.get('employee_position', '')
         if search_query and filters:
-            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(first_middle_name__icontains=search_query)
+            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(
+                first_middle_name__icontains=search_query)
             employees = employees.filter(position=filters)
         elif search_query:
-            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(first_middle_name__icontains=search_query)
+            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(
+                first_middle_name__icontains=search_query)
         elif filters:
             employees = Employee.objects.filter(position=filters)
         else:
@@ -255,12 +261,12 @@ def add_employee(request):
             return HttpResponseRedirect('/employees')
         messages.add_message(request, messages.ERROR, 'Не удалось добавить сотрудника!')
     return render(
-            request,
-            'administrator/employees/add_employee.html',
-            {
-                'form': form
-            }
-        )
+        request,
+        'administrator/employees/add_employee.html',
+        {
+            'form': form
+        }
+    )
 
 
 class PreliminaryAgreementsView(View):
@@ -274,21 +280,129 @@ class PreliminaryAgreementsView(View):
 
 
 def edit_preliminary_agreement(request, pk):
+    try:
+        travel_routes = TravelRoute.objects.filter(preliminary_agreement_number=pk)
+    except ObjectDoesNotExist:
+        travel_routes = None
     preliminary_agreement = PreliminaryAgreement.objects.get(id=pk)
     form = PreliminaryAgreementForm(instance=preliminary_agreement)
     if request.method == 'POST':
         form = PreliminaryAgreementForm(request.POST, instance=preliminary_agreement)
         if form.is_valid():
-            form.save()
-            messages.add_message(request, messages.INFO, 'Предварительное соглашение успешно изменено!')
-            return HttpResponseRedirect('/preliminary_agreements')
-        messages.add_message(request, messages.ERROR, 'Не удалось изменить предварительное соглашение!')
+            trip_start_date = form.cleaned_data['trip_start_date']
+            trip_end_date = form.cleaned_data['trip_end_date']
+            if trip_end_date < trip_start_date:
+                messages.add_message(request, messages.ERROR,
+                                     'Дата окончания поездки не может быть раньше даты начала поездки!')
+            else:
+                form.save()
+                messages.add_message(request, messages.INFO, 'Предварительное соглашение успешно изменено!')
+                return HttpResponseRedirect('/preliminary_agreements')
+
     return render(
         request,
-        'administrator/preliminary_agreements/edit_contract.html',
+        'administrator/preliminary_agreements/edit_preliminary_agreement.html',
         {
             'preliminary_agreement': preliminary_agreement,
+            'travel_routes': travel_routes,
             'form': form
+        }
+    )
+
+
+def get_cities_to_visit(request, pk):
+    travel_routes = TravelRoute.objects.filter(preliminary_agreement_number=pk)
+    preliminary_agreement = PreliminaryAgreement.objects.get(id=pk)
+    return render(
+        request,
+        'administrator/preliminary_agreements/cities_to_visit/cities_to_visit_list.html',
+        {
+            'travel_routes': travel_routes,
+            'preliminary_agreement': preliminary_agreement
+        }
+    )
+
+
+def delete_city_to_visit(request, pk):
+    travel_route = TravelRoute.objects.get(id=pk)
+    num = travel_route.preliminary_agreement_number
+    if request.method == 'POST':
+        travel_route.delete()
+        return redirect('cities_to_visit_list', pk=num)
+    return render(
+        request,
+        'administrator/preliminary_agreements/cities_to_visit/delete_city_to_visit.html',
+        {
+            'travel_route': travel_route
+        }
+    )
+
+
+def add_city_to_visit(request, pk):
+    preliminary_agreement = PreliminaryAgreement.objects.get(id=pk)
+    form = CitiesToVisitForm(initial={'preliminary_agreement_number': pk})
+    if request.method == 'POST':
+        form = CitiesToVisitForm(request.POST)
+        if form.is_valid():
+            city_to_visit = form.cleaned_data['city_to_visit']
+            country_to_visit = preliminary_agreement.country_to_visit
+            try:
+                right_country = City.objects.get(city=city_to_visit, country=country_to_visit)
+            except ObjectDoesNotExist:
+                right_country = None
+            try:
+                duplication = TravelRoute.objects.get(city_to_visit=city_to_visit, preliminary_agreement_number=pk)
+            except ObjectDoesNotExist:
+                duplication = None
+            if not right_country:
+                messages.add_message(request, messages.ERROR,
+                                     'Выберите город, соответсвующий выбранной стране!')
+            elif duplication:
+                messages.add_message(request, messages.ERROR,
+                                     'Данный город уже есть в списке!')
+            else:
+                form.save()
+                return redirect('cities_to_visit_list', pk=pk)
+    return render(
+        request,
+        'administrator/preliminary_agreements/cities_to_visit/add_city_to_visit.html',
+        {
+            'form': form,
+            'preliminary_agreement': preliminary_agreement
+        }
+    )
+
+
+def choose_country_to_visit(request, pk):
+    preliminary_agreement = PreliminaryAgreement.objects.get(id=pk)
+    form = CountryToVisitForm(instance=preliminary_agreement)
+    if request.method == 'POST':
+        form = CountryToVisitForm(request.POST, instance=preliminary_agreement)
+        if form.is_valid():
+            form.save()
+            return redirect('cities_to_visit_list', pk=pk)
+    return render(
+        request,
+        'administrator/preliminary_agreements/cities_to_visit/choose_country_to_visit.html',
+        {
+            'form': form,
+            'preliminary_agreement': preliminary_agreement
+        }
+    )
+
+
+def clear_country_to_visit(request, pk):
+    preliminary_agreement = PreliminaryAgreement.objects.get(id=pk)
+    travel_routes = TravelRoute.objects.filter(preliminary_agreement_number=pk)
+    if request.method == 'POST':
+        clear_country = PreliminaryAgreement.objects.filter(id=pk).update(country_to_visit=None)
+        travel_routes.delete()
+        return redirect('choose_country_to_visit', pk=pk)
+    return render(
+        request,
+        'administrator/preliminary_agreements/cities_to_visit/clear_country_to_visit.html',
+        {
+            'preliminary_agreement': preliminary_agreement
         }
     )
 
@@ -301,7 +415,7 @@ def delete_preliminary_agreement(request, pk):
         return HttpResponseRedirect('/preliminary_agreements')
     return render(
         request,
-        'administrator/preliminary_agreements/delete_contract.html',
+        'administrator/preliminary_agreements/delete_preliminary_agreement.html',
         {
             'preliminary_agreement': preliminary_agreement
         }
@@ -318,12 +432,12 @@ def add_preliminary_agreement(request):
             return HttpResponseRedirect('/preliminary_agreements')
         messages.add_message(request, messages.ERROR, 'Не удалось добавить предварительное соглашение!')
     return render(
-            request,
-            'administrator/preliminary_agreements/add_contract.html',
-            {
-                'form': form
-            }
-        )
+        request,
+        'administrator/preliminary_agreements/add_preliminary_agreement.html',
+        {
+            'form': form
+        }
+    )
 
 
 class ContractsView(View):
@@ -381,12 +495,13 @@ def add_contract(request):
             return HttpResponseRedirect('/contracts')
         messages.add_message(request, messages.ERROR, 'Не удалось добавить договор!')
     return render(
-            request,
-            'administrator/contracts/add_contract.html',
-            {
-                'form': form
-            }
-        )
+        request,
+        'administrator/contracts/add_contract.html',
+        {
+            'form': form
+        }
+    )
+
 
 # -------------------------------------------------------БУХГАЛТЕР------------------------------------------------------
 
@@ -395,7 +510,8 @@ class AccountantClientsView(View):
     def get(self, request, *args, **kwargs):
         search_query = request.GET.get('search', '')
         if search_query:
-            clients = Client.objects.filter(surname__icontains=search_query) | Client.objects.filter(first_middle_name__icontains=search_query)
+            clients = Client.objects.filter(surname__icontains=search_query) | Client.objects.filter(
+                first_middle_name__icontains=search_query)
         else:
             clients = Client.objects.all()
         return render(
@@ -410,10 +526,12 @@ class AccountantEmployeesView(View):
         search_query = request.GET.get('search', '')
         filters = request.GET.get('employee_position', '')
         if search_query and filters:
-            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(first_middle_name__icontains=search_query)
+            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(
+                first_middle_name__icontains=search_query)
             employees = employees.filter(position=filters)
         elif search_query:
-            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(first_middle_name__icontains=search_query)
+            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(
+                first_middle_name__icontains=search_query)
         elif filters:
             employees = Employee.objects.filter(position=filters)
         else:
@@ -435,10 +553,12 @@ class ManagerEmployeesView(View):
         search_query = request.GET.get('search', '')
         filters = request.GET.get('employee_position', '')
         if search_query and filters:
-            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(first_middle_name__icontains=search_query)
+            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(
+                first_middle_name__icontains=search_query)
             employees = employees.filter(position=filters)
         elif search_query:
-            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(first_middle_name__icontains=search_query)
+            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(
+                first_middle_name__icontains=search_query)
         elif filters:
             employees = Employee.objects.filter(position=filters)
         else:
@@ -460,10 +580,12 @@ class AgentEmployeesView(View):
         search_query = request.GET.get('search', '')
         filters = request.GET.get('employee_position', '')
         if search_query and filters:
-            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(first_middle_name__icontains=search_query)
+            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(
+                first_middle_name__icontains=search_query)
             employees = employees.filter(position=filters)
         elif search_query:
-            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(first_middle_name__icontains=search_query)
+            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(
+                first_middle_name__icontains=search_query)
         elif filters:
             employees = Employee.objects.filter(position=filters)
         else:
@@ -475,4 +597,3 @@ class AgentEmployeesView(View):
                 'employees': employees
             }
         )
-

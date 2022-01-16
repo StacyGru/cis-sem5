@@ -6,7 +6,9 @@ from .models import (
     Client,
     Passport,
     PreliminaryAgreement,
-    Contract
+    Contract,
+    City,
+    TravelRoute
 )
 from django.forms.widgets import ClearableFileInput
 from django.utils.translation import ugettext_lazy
@@ -154,14 +156,19 @@ class PreliminaryAgreementForm(forms.ModelForm):
         self.fields['employee'].label = 'Сотрудник'
         self.fields['client'].label = 'Клиент'
         self.fields['number_of_trip_participants'].label = 'Количество участников поездки'
-        self.fields['country_of_visit'].label = 'Страна посещения'
         self.fields['trip_start_date'].label = 'Дата начала поездки'
         self.fields['trip_end_date'].label = 'Дата окончания поездки'
-        self.fields['cities_to_visit'].label = 'Города посещения'
+
+    def correct_trip_period(self):
+        trip_start_date = self.cleaned_data['trip_start_date']
+        trip_end_date = self.cleaned_data['trip_end_date']
+        if trip_start_date > trip_end_date:
+            raise forms.ValidationError("Дата окончания поездки не может быть раньше даты начала поездки!")
+        return trip_end_date
 
     class Meta:
         model = PreliminaryAgreement
-        fields = ['date_time', 'organization', 'employee', 'client', 'number_of_trip_participants', 'country_of_visit', 'trip_start_date', 'trip_end_date', 'cities_to_visit']
+        fields = ['date_time', 'organization', 'employee', 'client', 'number_of_trip_participants', 'country_to_visit', 'trip_start_date', 'trip_end_date']
         widgets = {
             'date_time': DateTimePickerInput(
                 options={
@@ -181,7 +188,41 @@ class PreliminaryAgreementForm(forms.ModelForm):
                     "locale": 'ru',
                     "format": 'YYYY-MM-DD'
                 }
-            )
+            ),
+            'country_to_visit': forms.HiddenInput()
+        }
+
+
+class CountryToVisitForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['country_to_visit'].label = 'Страна посещения'
+
+    class Meta:
+        model = PreliminaryAgreement
+        fields = ['date_time', 'organization', 'employee', 'client', 'number_of_trip_participants', 'country_to_visit', 'trip_start_date', 'trip_end_date']
+        widgets = {
+            'date_time': forms.HiddenInput(),
+            'organization': forms.HiddenInput(),
+            'employee': forms.HiddenInput(),
+            'client': forms.HiddenInput(),
+            'number_of_trip_participants': forms.HiddenInput(),
+            'trip_start_date': forms.HiddenInput(),
+            'trip_end_date': forms.HiddenInput()
+        }
+
+
+class CitiesToVisitForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['city_to_visit'].label = 'Город посещения'
+        self.fields['preliminary_agreement_number'].label = 'Номер предварительного соглашения'
+
+    class Meta:
+        model = TravelRoute
+        fields = ['city_to_visit', 'preliminary_agreement_number']
+        widgets = {
+            'preliminary_agreement_number': forms.HiddenInput()
         }
 
 

@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import (
     City,
     Client,
+    Country,
     ClientStatus,
     Contract,
     CurrencyRate,
@@ -13,6 +14,7 @@ from .models import (
     Passport,
     Payment,
     PreliminaryAgreement,
+    TravelRoute,
     Synchronization,
     Trip
 )
@@ -23,6 +25,12 @@ class CityAdmin(admin.ModelAdmin):
     list_display = ('id', 'city', 'country')
     list_filter = ('country',)
     search_fields = ('id', 'city')
+
+
+class CountryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+    list_filter = ('name',)
+    search_fields = ('id', 'name')
 
 
 class ClientAdmin(admin.ModelAdmin):
@@ -56,15 +64,8 @@ class EmployeePositionAdmin(admin.ModelAdmin):
 
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = ('id', 'surname', 'first_middle_name', 'gender', 'position', 'organization', 'date_of_birth', 'photo')
-    # readonly_fields = ('photo_preview',)
     list_filter = ('gender', 'position', 'organization')
     search_fields = ('id', 'surname')
-
-    # def photo_preview(self, obj):
-    #     return obj.photo_preview
-    #
-    # photo_preview.short_description = 'Фотография'
-    # photo_preview.allow_tags = True
 
 
 class HotelAdmin(admin.ModelAdmin):
@@ -92,9 +93,15 @@ class PaymentAdmin(admin.ModelAdmin):
 
 
 class PreliminaryAgreementAdmin(admin.ModelAdmin):
-    list_display = ('id', 'date_time', 'organization', 'employee', 'client', 'number_of_trip_participants', 'country_of_visit','trip_start_date', 'trip_end_date', 'cities_to_visit')
+    list_display = ('id', 'date_time', 'organization', 'employee', 'client', 'number_of_trip_participants', 'country_to_visit', 'trip_start_date', 'trip_end_date')
     list_filter = ('date_time', 'organization', 'employee', 'client')
     search_fields = ('id', 'client')
+
+
+class TravelRouteAdmin(admin.ModelAdmin):
+    list_display = ('id', 'preliminary_agreement_number', 'city_to_visit', 'cities_order')
+    list_filter = ('preliminary_agreement_number',)
+    search_fields = ('id', 'city_to_visit', 'cities_order')
 
 
 class SynchronizationAdmin(admin.ModelAdmin):
@@ -111,6 +118,7 @@ class TripAdmin(admin.ModelAdmin):
 
 admin.site.register(City, CityAdmin)
 admin.site.register(Client, ClientAdmin)
+admin.site.register(Country, CountryAdmin)
 admin.site.register(ClientStatus, ClientStatusAdmin)
 admin.site.register(Contract, ContractAdmin)
 admin.site.register(CurrencyRate, CurrencyRateAdmin)
@@ -122,5 +130,6 @@ admin.site.register(HotelReservation, HotelReservationAdmin)
 admin.site.register(Passport, PassportAdmin)
 admin.site.register(Payment, PaymentAdmin)
 admin.site.register(PreliminaryAgreement, PreliminaryAgreementAdmin)
+admin.site.register(TravelRoute, TravelRouteAdmin)
 admin.site.register(Synchronization, SynchronizationAdmin)
 admin.site.register(Trip, TripAdmin)

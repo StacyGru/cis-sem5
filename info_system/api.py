@@ -1,6 +1,7 @@
 from rest_framework import viewsets, permissions
 from .models import (
     City,
+    Country,
     Client,
     ClientStatus,
     Contract,
@@ -13,11 +14,13 @@ from .models import (
     Passport,
     Payment,
     PreliminaryAgreement,
+    TravelRoute,
     Synchronization,
     Trip
 )
 from .serializers import (
     CitySerializer,
+    CountrySerializer,
     ClientSerializer,
     ClientStatusSerializer,
     ContractSerializer,
@@ -30,6 +33,7 @@ from .serializers import (
     PassportSerializer,
     PaymentSerializer,
     PreliminaryAgreementSerializer,
+    TravelRouteSerializer,
     SynchronizationSerializer,
     TripSerializer
 )
@@ -41,6 +45,14 @@ class CityViewSet(viewsets.ModelViewSet):
         permissions.AllowAny
     ]
     serializer_class = CitySerializer
+
+
+class CountryViewSet(viewsets.ModelViewSet):
+    queryset = Country.objects.all()
+    permission_classes = [
+        permissions.AllowAny
+    ]
+    serializer_class = CountrySerializer
 
 
 class ClientViewSet(viewsets.ModelViewSet):
@@ -137,6 +149,14 @@ class PreliminaryAgreementViewSet(viewsets.ModelViewSet):
         permissions.AllowAny
     ]
     serializer_class = PreliminaryAgreementSerializer
+
+
+class TravelRouteViewSet(viewsets.ModelViewSet):
+    queryset = TravelRoute.objects.all()
+    permission_classes = [
+        permissions.AllowAny
+    ]
+    serializer_class = TravelRouteSerializer
 
 
 class SynchronizationViewSet(viewsets.ModelViewSet):
