@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import(
+from .views import (
     LoginView,
     MainView,
     ProfileView,
@@ -10,7 +10,7 @@ from .views import(
     ManagerEmployeesView,
     AgentEmployeesView,
     PreliminaryAgreementsView,
-    ContractsView
+    ContractsView, PaymentsView
 )
 from django.contrib.auth.views import LogoutView
 from . import views
@@ -48,6 +48,11 @@ urlpatterns = [
     path('contracts/edit_сontract/<str:pk>/', views.edit_contract, name='edit_contract'),
     path('contracts/delete_сontract/<str:pk>/', views.delete_contract, name='delete_contract'),
     path('contracts/add_сontract/', views.add_contract, name='add_contract'),
+
+    path('payments/', PaymentsView.as_view(), name='payments'),
+    path('payments/edit_payment/<str:pk>/', views.edit_payment, name='edit_payment'),
+    path('payments/delete_payment/<str:pk>/', views.delete_payment, name='delete_payment'),
+    path('payments/add_payment/', views.add_payment, name='add_payment'),
 
     # ------------------------------------------------БУХГАЛТЕР---------------------------------------------------------
     path('accountant/clients/', AccountantClientsView.as_view(), name='accountant/clients'),

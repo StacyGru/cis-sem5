@@ -193,7 +193,7 @@ class Payment(models.Model):
         db_table = 'payment'
 
     def __str__(self):
-        return self.contract_number
+        return str(self.id)
 
 
 class TravelRoute(models.Model):

@@ -13,7 +13,7 @@ from .forms import (
     PreliminaryAgreementForm,
     ContractForm,
     CountryToVisitForm,
-    CitiesToVisitForm
+    CitiesToVisitForm, PaymentForm
 )
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
@@ -25,7 +25,7 @@ from .models import (
     Contract,
     City,
     Country,
-    TravelRoute
+    TravelRoute, Payment
 )
 
 
@@ -497,6 +497,67 @@ def add_contract(request):
     return render(
         request,
         'administrator/contracts/add_contract.html',
+        {
+            'form': form
+        }
+    )
+
+
+class PaymentsView(View):
+    def get(self, request, *args, **kwargs):
+        payments = Payment.objects.all()
+        return render(
+            request,
+            'administrator/payments/payments_list.html',
+            {'payments': payments}
+        )
+
+
+def edit_payment(request, pk):
+    payment = Payment.objects.get(id=pk)
+    form = PaymentForm(instance=payment)
+    if request.method == 'POST':
+        form = PaymentForm(request.POST, instance=payment)
+        if form.is_valid():
+            form.save()
+            messages.add_message(request, messages.INFO, 'Оплата успешно изменена!')
+            return HttpResponseRedirect('/payments')
+    return render(
+        request,
+        'administrator/payments/edit_payment.html',
+        {
+            'payment': payment,
+            'form': form
+        }
+    )
+
+
+def delete_payment(request, pk):
+    payment = Payment.objects.get(id=pk)
+    if request.method == 'POST':
+        payment.delete()
+        messages.add_message(request, messages.INFO, 'Оплата успешно удалена!')
+        return HttpResponseRedirect('/payments')
+    return render(
+        request,
+        'administrator/payments/delete_payment.html',
+        {
+            'payment': payment
+        }
+    )
+
+
+def add_payment(request):
+    form = PaymentForm()
+    if request.method == 'POST':
+        form = PaymentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.add_message(request, messages.INFO, 'Оплата успешно добавлена!')
+            return HttpResponseRedirect('/payments')
+    return render(
+        request,
+        'administrator/payments/add_payment.html',
         {
             'form': form
         }

@@ -8,7 +8,7 @@ from .models import (
     PreliminaryAgreement,
     Contract,
     City,
-    TravelRoute
+    TravelRoute, Payment
 )
 from django.forms.widgets import ClearableFileInput
 from django.utils.translation import ugettext_lazy
@@ -88,7 +88,6 @@ class EmployeeForm(forms.ModelForm):
 
 
 class ClientForm(forms.ModelForm):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['surname'].label = 'Фамилия'
@@ -240,6 +239,29 @@ class ContractForm(forms.ModelForm):
     class Meta:
         model = Contract
         fields = ['date_time', 'preliminary_agreement_number', 'organization', 'employee', 'trip_participants', 'currency', 'sum']
+        widgets = {
+            'date_time': DateTimePickerInput(
+                options={
+                    "locale": 'ru',
+                    "format": 'YYYY-MM-DD HH:mm:ss',
+                    "collapse": True
+                }
+            )
+        }
+
+
+class PaymentForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['date_time'].label = 'Дата и время'
+        self.fields['organization'].label = 'Организация'
+        self.fields['contract_number'].label = 'Номер контракта'
+        self.fields['sum_in_rubles'].label = 'Сумма в рублях'
+
+    class Meta:
+        model = Payment
+        fields = ['date_time', 'organization', 'contract_number', 'sum_in_rubles']
         widgets = {
             'date_time': DateTimePickerInput(
                 options={
