@@ -82,16 +82,14 @@ WSGI_APPLICATION = 'mechta_puteshestvennika.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.mysql',
-        # 'NAME': 'mechta_puteshestvennika',
-        # 'USER': 'root',
-        # 'PASSWORD': '123456',
-        # 'HOST': 'localhost'
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'std_940_cis_sem5',
         'USER': 'std_940_cis_sem5',
         'PASSWORD': '12345678',
-        'HOST': 'std-mysql'
+        'HOST': 'std-mysql',
+        'OPTIONS': {
+            'isolation_level': 'read committed'
+        }
     }
 }
 
