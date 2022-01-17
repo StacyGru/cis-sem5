@@ -12,6 +12,14 @@ PASSPORT_TYPE_CHOICES = [
     ('заграничный', 'заграничный')
 ]
 
+ROOM_TYPE_CHOICES = [
+    ('одноместный', 'одноместный'),
+    ('двухместный (с одной кроватью)', 'двухместный (с одной кроватью)'),
+    ('двухместный (с двумя отдельными кроватями)', 'двухместный (с двумя отдельными кроватями)'),
+    ('трёхместный (с одной кроватью для двоих + 1 доп. кроватью)', 'трёхместный (с одной кроватью для двоих + 1 доп. кроватью)'),
+    ('четырёхместный (с одной кроватью для двоих + 2 доп. кроватями)', 'четырёхместный (с одной кроватью для двоих + 2 доп. кроватями)')
+]
+
 
 class Country(models.Model):
     name = models.CharField(max_length=128)
@@ -133,7 +141,7 @@ class Employee(models.Model):
 
 
 class Hotel(models.Model):
-    country = models.CharField(max_length=64)
+    country = models.ForeignKey(Country, models.DO_NOTHING, db_column='country')
     city = models.ForeignKey(City, models.DO_NOTHING, db_column='city')
     hotel_name = models.CharField(max_length=128)
     address = models.CharField(max_length=256)
@@ -147,11 +155,25 @@ class Hotel(models.Model):
         return self.hotel_name
 
 
+class TravelRoute(models.Model):
+    preliminary_agreement_number = models.ForeignKey('PreliminaryAgreement', models.DO_NOTHING, db_column='preliminary_agreement_number')
+    city_to_visit = models.ForeignKey(City, models.DO_NOTHING, db_column='city_to_visit')
+    cities_order = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'travel_route'
+
+    def __str__(self):
+        return str(self.city_to_visit)
+
+
 class HotelReservation(models.Model):
     hotel = models.ForeignKey(Hotel, models.DO_NOTHING, db_column='hotel')
     contract_number = models.ForeignKey(Contract, models.DO_NOTHING, db_column='contract_number')
+    travel_route = models.ForeignKey(TravelRoute, models.DO_NOTHING, db_column='travel_route')
     hotel_room = models.IntegerField()
-    room_type = models.CharField(max_length=11)
+    room_type = models.CharField(max_length=128, choices=ROOM_TYPE_CHOICES)
     check_in_date = models.DateField(db_column='check-in_date')  # Field renamed to remove unsuitable characters.
     check_out_date = models.DateField()
     currency = models.ForeignKey(CurrencyRate, models.DO_NOTHING, db_column='currency')
@@ -162,7 +184,7 @@ class HotelReservation(models.Model):
         db_table = 'hotel_reservation'
 
     def __str__(self):
-        return self.contract_number
+        return str(self.id)
 
 
 class Passport(models.Model):
@@ -195,19 +217,6 @@ class Payment(models.Model):
 
     def __str__(self):
         return str(self.id)
-
-
-class TravelRoute(models.Model):
-    preliminary_agreement_number = models.ForeignKey('PreliminaryAgreement', models.DO_NOTHING, db_column='preliminary_agreement_number')
-    city_to_visit = models.ForeignKey(City, models.DO_NOTHING, db_column='city_to_visit')
-    cities_order = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'travel_route'
-
-    def __str__(self):
-        return str(self.city_to_visit)
 
 
 class PreliminaryAgreement(models.Model):

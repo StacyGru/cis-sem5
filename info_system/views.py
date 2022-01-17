@@ -25,7 +25,7 @@ from .models import (
     Contract,
     City,
     Country,
-    TravelRoute, Payment, CurrencyRate
+    TravelRoute, Payment, CurrencyRate, HotelReservation
 )
 
 
@@ -466,6 +466,26 @@ def edit_contract(request, pk):
         {
             'contract': contract,
             'form': form
+        }
+    )
+
+
+def get_hotel_reservations(request, pk):
+    contract = Contract.objects.get(id=pk)
+    preliminary_agreement_number = contract.preliminary_agreement_number
+    travel_routes = TravelRoute.objects.filter(preliminary_agreement_number=preliminary_agreement_number)
+    hotel_reservations = HotelReservation.objects.filter(contract_number=pk)
+    # try:
+    #     travel_routes_no_hotel = HotelReservation.objects.filter(travel_route=preliminary_agreement_number)
+    # except ObjectDoesNotExist:
+    #     right_country = None
+    return render(
+        request,
+        'administrator/contracts/hotel_reservations/hotel_reservations_list.html',
+        {
+            'travel_routes': travel_routes,
+            'contract': contract,
+            'hotel_reservations': hotel_reservations
         }
     )
 

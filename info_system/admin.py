@@ -75,7 +75,7 @@ class HotelAdmin(admin.ModelAdmin):
 
 
 class HotelReservationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'hotel', 'contract_number', 'hotel_room', 'room_type', 'check_in_date', 'check_out_date', 'currency', 'price')
+    list_display = ('id', 'hotel', 'contract_number', 'travel_route', 'hotel_room', 'room_type', 'check_in_date', 'check_out_date', 'currency', 'price')
     list_filter = ('hotel', 'room_type', 'check_in_date', 'check_out_date')
     search_fields = ('id', 'contract_number')
 
