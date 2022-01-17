@@ -17,7 +17,8 @@ from .models import (
     PreliminaryAgreement,
     TravelRoute,
     Synchronization,
-    Trip
+    Trip,
+    TransactionLogEmployee
 )
 from .serializers import (
     ActivitySerializer,
@@ -37,7 +38,8 @@ from .serializers import (
     PreliminaryAgreementSerializer,
     TravelRouteSerializer,
     SynchronizationSerializer,
-    TripSerializer
+    TripSerializer,
+    TransactionLogEmployeeSerializer
 )
 
 
@@ -183,3 +185,11 @@ class TripViewSet(viewsets.ModelViewSet):
         permissions.AllowAny
     ]
     serializer_class = TripSerializer
+
+
+class TransactionLogEmployeeViewSet(viewsets.ModelViewSet):
+    queryset = TransactionLogEmployee.objects.all()
+    permission_classes = [
+        permissions.AllowAny
+    ]
+    serializer_class = TransactionLogEmployeeSerializer

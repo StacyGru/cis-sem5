@@ -20,6 +20,11 @@ ROOM_TYPE_CHOICES = [
     ('четырёхместный (с одной кроватью для двоих + 2 доп. кроватями)', 'четырёхместный (с одной кроватью для двоих + 2 доп. кроватями)')
 ]
 
+TRANSACTION_CHOICES = [
+    ('добавление', 'добавление'),
+    ('редактирование', 'редактирование'),
+]
+
 
 class Country(models.Model):
     name = models.CharField(max_length=128)
@@ -148,7 +153,7 @@ class Employee(models.Model):
     organization = models.ForeignKey(Organization, models.DO_NOTHING, db_column='organization')
     date_of_birth = models.DateField(blank=True, null=True)
     photo = models.ImageField(blank=True, null=True)
-    user_auth = models.ForeignKey(AuthUser, models.DO_NOTHING, db_column='user_auth', unique=True)
+    user_auth = models.OneToOneField(AuthUser, models.DO_NOTHING, db_column='user_auth')
 
     class Meta:
         managed = False
@@ -171,6 +176,19 @@ class Activity(models.Model):
 
     def __str__(self):
         return self.user_id.__str__()
+
+
+class TransactionLogEmployee(models.Model):
+    type = models.CharField(max_length=20, choices=TRANSACTION_CHOICES)
+    date_time = models.DateTimeField()
+    employee_id = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'transaction_log_employee'
+
+    def __str__(self):
+        return str(self.id)
 
 
 class Hotel(models.Model):

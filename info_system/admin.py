@@ -17,7 +17,8 @@ from .models import (
     PreliminaryAgreement,
     TravelRoute,
     Synchronization,
-    Trip
+    Trip,
+    TransactionLogEmployee
 )
 
 
@@ -122,6 +123,10 @@ class TripAdmin(admin.ModelAdmin):
     search_fields = ('id', 'contract_number')
 
 
+class TransactionLogEmployeeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'type', 'date_time', 'employee_id')
+
+
 admin.site.register(Activity, ActivityAdmin)
 admin.site.register(City, CityAdmin)
 admin.site.register(Client, ClientAdmin)
@@ -140,3 +145,4 @@ admin.site.register(PreliminaryAgreement, PreliminaryAgreementAdmin)
 admin.site.register(TravelRoute, TravelRouteAdmin)
 admin.site.register(Synchronization, SynchronizationAdmin)
 admin.site.register(Trip, TripAdmin)
+admin.site.register(TransactionLogEmployee, TransactionLogEmployeeAdmin)

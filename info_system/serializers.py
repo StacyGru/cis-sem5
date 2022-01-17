@@ -17,7 +17,8 @@ from .models import (
     PreliminaryAgreement,
     TravelRoute,
     Synchronization,
-    Trip
+    Trip,
+    TransactionLogEmployee
 )
 
 
@@ -126,4 +127,10 @@ class SynchronizationSerializer(serializers.ModelSerializer):
 class TripSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trip
+        fields = '__all__'
+
+
+class TransactionLogEmployeeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TransactionLogEmployee
         fields = '__all__'
