@@ -93,6 +93,7 @@ class Contract(models.Model):
 
 class CurrencyRate(models.Model):
     currency_name = models.CharField(max_length=64)
+    amount = models.IntegerField()
     rate = models.FloatField()
 
     class Meta:
@@ -186,7 +187,7 @@ class Payment(models.Model):
     date_time = models.DateTimeField(db_column='date&time')  # Field renamed to remove unsuitable characters.
     organization = models.ForeignKey(Organization, models.DO_NOTHING, db_column='organization')
     contract_number = models.ForeignKey(Contract, models.DO_NOTHING, db_column='contract_number')
-    sum_in_rubles = models.IntegerField()
+    sum_in_rubles = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False

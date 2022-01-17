@@ -50,7 +50,7 @@ class ContractAdmin(admin.ModelAdmin):
 
 
 class CurrencyRateAdmin(admin.ModelAdmin):
-    list_display = ('id', 'currency_name', 'rate')
+    list_display = ('id', 'currency_name', 'rate', 'amount')
     search_fields = ('id', 'currency_name')
 
 
@@ -90,6 +90,7 @@ class PaymentAdmin(admin.ModelAdmin):
     list_display = ('id', 'date_time', 'organization', 'contract_number', 'sum_in_rubles')
     list_filter = ('organization', 'date_time')
     search_fields = ('contract_number',)
+    readonly_fields = ('sum_in_rubles',)
 
 
 class PreliminaryAgreementAdmin(admin.ModelAdmin):

@@ -22,8 +22,8 @@
     {% for preliminary_agreement in preliminary_agreements %}
         <div class="card m-3 bg-light">
             <div class="card-body">
-                <a href="{% url 'edit_preliminary_agreement' preliminary_agreement.id %}" class="text-dark"><h5 class="card-title">{{ preliminary_agreement.id }}</h5></a>
-                <p class="card-text">{{ preliminary_agreement.client }}</p>
+                <a href="{% url 'edit_preliminary_agreement' preliminary_agreement.id %}" class="text-dark"><h5 class="card-title">Соглашение №{{ preliminary_agreement.id }}</h5></a>
+                <p class="card-text">Клиент: {{ preliminary_agreement.client }}</p>
             </div>
         </div>
     {% endfor %}

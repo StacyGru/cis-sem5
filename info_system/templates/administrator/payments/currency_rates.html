@@ -1,0 +1,40 @@
+{% extends 'main.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<h3 class="mt-5 mb-5 text-center">Курс валют</h3>
+
+<form action="" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="submit" class="btn btn-success" value="Обновить">
+</form>
+
+<div class="row">
+    <div class="col-sm-6">
+
+    <table class="table">
+        <thead>
+            <tr>
+            <th scope="col">id</th>
+            <th scope="col">Наименование валюты</th>
+            <th scope="col">Количество</th>
+            <th scope="col">Курс</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for currency_rate in currency_list %}
+            <tr>
+              <td class="">{{currency_rate.id}}</td>
+              <td class="">{{currency_rate.currency_name}}</td>
+              <td class="">{{currency_rate.amount}}</td>
+              <td class="">{{currency_rate.rate}}</td>
+            </tr>
+          {% endfor %}
+        <tbody>
+    </table>
+
+  </div>
+</div>
+
+{% endblock %}

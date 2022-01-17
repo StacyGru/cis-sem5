@@ -22,8 +22,8 @@
     {% for payment in payments %}
         <div class="card m-3 bg-light">
             <div class="card-body">
-                <a href="{% url 'edit_payment' payment.id %}" class="text-dark"><h5 class="card-title">{{ payment.id }}</h5></a>
-                <p class="card-text">Контракт: {{ payment.contract_number }}</p>
+                <a href="{% url 'edit_payment' payment.id %}" class="text-dark"><h5 class="card-title">Оплата №{{ payment.id }}</h5></a>
+                <p class="card-text">Договор: №{{ payment.contract_number }}</p>
             </div>
         </div>
     {% endfor %}

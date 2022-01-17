@@ -50,6 +50,7 @@ urlpatterns = [
     path('contracts/add_сontract/', views.add_contract, name='add_contract'),
 
     path('payments/', PaymentsView.as_view(), name='payments'),
+    path('payments/currency_rates/', views.currency_rate, name='currency_rates'),
     path('payments/edit_payment/<str:pk>/', views.edit_payment, name='edit_payment'),
     path('payments/delete_payment/<str:pk>/', views.delete_payment, name='delete_payment'),
     path('payments/add_payment/', views.add_payment, name='add_payment'),

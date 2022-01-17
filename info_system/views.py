@@ -1,10 +1,10 @@
-from audioop import reverse
-
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.http.response import HttpResponseRedirect
 from django.views.generic import View
 from django.core.exceptions import ObjectDoesNotExist
+from requests import get
+from bs4 import BeautifulSoup as bs
 from .forms import (
     LoginForm,
     EmployeeForm,
@@ -25,7 +25,7 @@ from .models import (
     Contract,
     City,
     Country,
-    TravelRoute, Payment
+    TravelRoute, Payment, CurrencyRate
 )
 
 
@@ -516,9 +516,15 @@ class PaymentsView(View):
 def edit_payment(request, pk):
     payment = Payment.objects.get(id=pk)
     form = PaymentForm(instance=payment)
+    contract_instance = payment.contract_number
+    contract_id = contract_instance.id
+    contract = Contract.objects.get(id=contract_id)
+    currency_instance = contract.currency
+    payment_amount = int(currency_instance.rate) / int(currency_instance.amount) * int(contract.sum)
     if request.method == 'POST':
         form = PaymentForm(request.POST, instance=payment)
         if form.is_valid():
+            payment.sum_in_rubles = payment_amount
             form.save()
             messages.add_message(request, messages.INFO, 'Оплата успешно изменена!')
             return HttpResponseRedirect('/payments')
@@ -527,7 +533,8 @@ def edit_payment(request, pk):
         'administrator/payments/edit_payment.html',
         {
             'payment': payment,
-            'form': form
+            'form': form,
+            'payment_amount': payment_amount
         }
     )
 
@@ -552,14 +559,48 @@ def add_payment(request):
     if request.method == 'POST':
         form = PaymentForm(request.POST)
         if form.is_valid():
+            payment_instance = form.save()
+            payment_id = payment_instance.id
             form.save()
-            messages.add_message(request, messages.INFO, 'Оплата успешно добавлена!')
-            return HttpResponseRedirect('/payments')
+            messages.add_message(request, messages.WARNING, 'Оплата успешно добавлена! Пожалуйста, нажмите кнопку "Сохранить" чтобы зафиксировать вычисленную сумму в рублях!')
+            return redirect('edit_payment', pk=payment_id)
     return render(
         request,
         'administrator/payments/add_payment.html',
         {
             'form': form
+        }
+    )
+
+
+def currency_rate(request):
+
+    headers = {
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+        "Host":"www.cbr.ru:443",
+        "Accept-Encoding": "gzip, deflate, sdch, br",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36"
+    }
+
+    body = get('http://www.cbr.ru/currency_base/daily/', headers=headers)
+    for_bs = body.text
+    soup = bs(for_bs, 'html.parser')
+
+    currency_list = CurrencyRate.objects.all()
+    currency = soup.find_all('td')
+
+    if request.method == 'POST':
+        i = 4
+        for item in currency_list:
+            CurrencyRate.objects.filter(id=item.id).update(rate=currency[i].text.replace(',', '.'))
+            i += 5
+
+    return render(
+        request,
+        'administrator/payments/currency_rates.html',
+        {
+            'currency_list': currency_list
         }
     )
 

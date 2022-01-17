@@ -251,7 +251,6 @@ class ContractForm(forms.ModelForm):
 
 
 class PaymentForm(forms.ModelForm):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['date_time'].label = 'Дата и время'
@@ -269,5 +268,6 @@ class PaymentForm(forms.ModelForm):
                     "format": 'YYYY-MM-DD HH:mm:ss',
                     "collapse": True
                 }
-            )
+            ),
+            'sum_in_rubles': forms.HiddenInput()
         }

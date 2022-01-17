@@ -22,8 +22,8 @@
     {% for contract in contracts %}
         <div class="card m-3 bg-light">
             <div class="card-body">
-                <a href="{% url 'edit_contract' contract.id %}" class="text-dark"><h5 class="card-title">{{ contract.id }}</h5></a>
-                <p class="card-text">{{ contract.preliminary_agreement_number }}</p>
+                <a href="{% url 'edit_contract' contract.id %}" class="text-dark"><h5 class="card-title">Договор №{{ contract.id }}</h5></a>
+                <p class="card-text">Соглашение: №{{ contract.preliminary_agreement_number }}</p>
             </div>
         </div>
     {% endfor %}
