@@ -140,6 +140,21 @@ class Employee(models.Model):
         return self.surname
 
 
+class Activity(models.Model):
+    user_id = models.IntegerField()
+    date = models.DateField()
+    time = models.TimeField(blank=True, null=True)
+    day_activity = models.BooleanField(default=False)
+    night_activity = models.BooleanField(default=False)
+
+    class Meta:
+        managed = False
+        db_table = 'activity'
+
+    def __str__(self):
+        return self.user_id.__str__()
+
+
 class Hotel(models.Model):
     country = models.ForeignKey(Country, models.DO_NOTHING, db_column='country')
     city = models.ForeignKey(City, models.DO_NOTHING, db_column='city')

@@ -4,4 +4,30 @@
 
 <h3 class="mt-5 mb-5 text-center">Профиль сотрудника {{ request.user.username }}</h3>
 
+<div class="row justify-content-md-center" style="">
+    <div class="col col-lg-2">
+        </div>
+
+    <div class="col-lg-6">
+
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">{{ request.user.last_name }} {{ request.user.first_name }}</h5>
+            <div class="card-text mt-5">
+                <p >Количество активностей за сегодня: {{ activities }}</p>
+                <p>Статус активности: {{ status }}
+                    <ul>
+                        <li>количество активностей в дневное время: {{ daytime }}</li>
+                        <li>количество активностей в вечернее время: {{ nighttime }}</li>
+                    </ul>
+            </div>
+          </div>
+        </div>
+
+    </div>
+
+    <div class="col col-lg-2">
+        </div>
+</div>
+
 {% endblock %}

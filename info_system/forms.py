@@ -7,8 +7,9 @@ from .models import (
     Passport,
     PreliminaryAgreement,
     Contract,
-    City,
-    TravelRoute, Payment
+    TravelRoute,
+    Payment,
+    Activity
 )
 from django.forms.widgets import ClearableFileInput
 from django.utils.translation import ugettext_lazy
@@ -271,3 +272,9 @@ class PaymentForm(forms.ModelForm):
             ),
             'sum_in_rubles': forms.HiddenInput()
         }
+
+
+class UserActivityForm(forms.ModelForm):
+    class Meta:
+        model = Activity
+        fields = ['user_id', 'date', 'time', 'day_activity', 'night_activity']

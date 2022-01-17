@@ -1,5 +1,6 @@
 from rest_framework import viewsets, permissions
 from .models import (
+    Activity,
     City,
     Country,
     Client,
@@ -19,6 +20,7 @@ from .models import (
     Trip
 )
 from .serializers import (
+    ActivitySerializer,
     CitySerializer,
     CountrySerializer,
     ClientSerializer,
@@ -37,6 +39,14 @@ from .serializers import (
     SynchronizationSerializer,
     TripSerializer
 )
+
+
+class ActivityViewSet(viewsets.ModelViewSet):
+    queryset = Activity.objects.all()
+    permission_classes = [
+        permissions.AllowAny
+    ]
+    serializer_class = ActivitySerializer
 
 
 class CityViewSet(viewsets.ModelViewSet):

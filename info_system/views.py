@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.http.response import HttpResponseRedirect
@@ -13,7 +15,9 @@ from .forms import (
     PreliminaryAgreementForm,
     ContractForm,
     CountryToVisitForm,
-    CitiesToVisitForm, PaymentForm
+    CitiesToVisitForm,
+    PaymentForm,
+    UserActivityForm
 )
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
@@ -24,8 +28,11 @@ from .models import (
     PreliminaryAgreement,
     Contract,
     City,
-    Country,
-    TravelRoute, Payment, CurrencyRate, HotelReservation
+    TravelRoute,
+    Payment,
+    CurrencyRate,
+    HotelReservation,
+    Activity
 )
 
 
@@ -58,9 +65,33 @@ class LoginView(View):
 class ProfileView(View):
     def get(self, request, *args, **kwargs):
         user = User.objects.get(pk=request.user.pk)
+        activities = Activity.objects.filter(user_id=user.id, date=str(datetime.datetime.now().date())).count()
+        month_activities_daytime = Activity.objects.filter(user_id=user.id, day_activity=True,
+                                                           date__contains='-' + str(
+                                                               datetime.datetime.now().date().strftime(
+                                                                   '%m')) + '-').count()
+        month_activities_nighttime = Activity.objects.filter(user_id=user.id, night_activity=True,
+                                                             date__contains='-' + str(
+                                                                 datetime.datetime.now().date().strftime(
+                                                                     '%m')) + '-').count()
+        if month_activities_daytime > month_activities_nighttime:
+            status = 'жаворонок'
+        elif month_activities_daytime < month_activities_nighttime:
+            status = 'сова'
+        else:
+            status = 'не определился'
+        user_id = user.id
         return render(
             request,
             'profile.html',
+            {
+                'user': user,
+                'activities': activities,
+                'user_id': user_id,
+                'status': status,
+                'daytime': month_activities_daytime,
+                'nighttime': month_activities_nighttime
+            }
         )
 
 
@@ -91,8 +122,20 @@ def edit_client(request, pk):
         passport = None
     if request.method == 'POST':
         form = ClientForm(request.POST, instance=client)
-        if form.is_valid():
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form.is_valid() and form_activity.is_valid():
             form.save()
+            form_activity.save()
             messages.add_message(request, messages.INFO, 'Клиент успешно изменён!')
             return HttpResponseRedirect('/clients')
         messages.add_message(request, messages.ERROR, 'Не удалось изменить клиента!')
@@ -111,8 +154,20 @@ def add_client_passport(request, pk):
     form = PassportForm(initial={'client': pk})
     if request.method == 'POST':
         form = PassportForm(request.POST)
-        if form.is_valid():
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form.is_valid() and form_activity.is_valid():
             form.save()
+            form_activity.save()
             messages.add_message(request, messages.INFO, 'Паспортные данные клиента успешно добавлен!')
             return HttpResponseRedirect('/clients')
         messages.add_message(request, messages.ERROR, 'Не удалось добавить паспортные данные клиента!')
@@ -135,8 +190,20 @@ def edit_client_passport(request, pk):
         form = PassportForm(instance=passport)
         if request.method == 'POST':
             form = PassportForm(request.POST, instance=passport)
-            if form.is_valid():
+            user = User.objects.get(pk=request.user.pk)
+            if 6 <= datetime.datetime.now().hour < 18:
+                form_activity = UserActivityForm(
+                    {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                     'time': str(datetime.datetime.now().time()),
+                     'day_activity': True, 'night_activity': False})
+            else:
+                form_activity = UserActivityForm(
+                    {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                     'time': str(datetime.datetime.now().time()),
+                     'day_activity': False, 'night_activity': True})
+            if form.is_valid() and form_activity.is_valid():
                 form.save()
+                form_activity.save()
                 messages.add_message(request, messages.INFO, 'Клиент успешно изменён!')
                 return HttpResponseRedirect('/clients')
             messages.add_message(request, messages.ERROR, 'Не удалось изменить клиента!')
@@ -162,6 +229,19 @@ def edit_client_passport(request, pk):
 def delete_client(request, pk):
     client = Client.objects.get(id=pk)
     if request.method == 'POST':
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form_activity.is_valid():
+            form_activity.save()
         client.delete()
         messages.add_message(request, messages.INFO, 'Клиент успешно удалён!')
         return HttpResponseRedirect('/clients')
@@ -178,8 +258,20 @@ def add_client(request):
     form = ClientForm()
     if request.method == 'POST':
         form = ClientForm(request.POST)
-        if form.is_valid():
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form.is_valid() and form_activity.is_valid():
             form.save()
+            form_activity.save()
             messages.add_message(request, messages.INFO, 'Клиент успешно добавлен!')
             return HttpResponseRedirect('/clients')
         messages.add_message(request, messages.ERROR, 'Не удалось добавить клиента!')
@@ -221,8 +313,20 @@ def edit_employee(request, pk):
     form = EmployeeForm(instance=employee)
     if request.method == 'POST':
         form = EmployeeForm(request.POST, request.FILES, instance=employee)
-        if form.is_valid():
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form.is_valid() and form_activity.is_valid():
             form.save()
+            form_activity.save()
             messages.add_message(request, messages.INFO, 'Сотрудник успешно изменён!')
             return HttpResponseRedirect('/employees')
         messages.add_message(request, messages.ERROR, 'Не удалось изменить сотрудника!')
@@ -239,6 +343,19 @@ def edit_employee(request, pk):
 def delete_employee(request, pk):
     employee = Employee.objects.get(id=pk)
     if request.method == 'POST':
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form_activity.is_valid():
+            form_activity.save()
         employee.delete()
         messages.add_message(request, messages.INFO, 'Сотрудник успешно удалён!')
         return HttpResponseRedirect('/employees')
@@ -255,8 +372,20 @@ def add_employee(request):
     form = EmployeeForm()
     if request.method == 'POST':
         form = EmployeeForm(request.POST, request.FILES)
-        if form.is_valid():
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form.is_valid() and form_activity.is_valid():
             form.save()
+            form_activity.save()
             messages.add_message(request, messages.INFO, 'Сотрудник успешно добавлен!')
             return HttpResponseRedirect('/employees')
         messages.add_message(request, messages.ERROR, 'Не удалось добавить сотрудника!')
@@ -288,7 +417,19 @@ def edit_preliminary_agreement(request, pk):
     form = PreliminaryAgreementForm(instance=preliminary_agreement)
     if request.method == 'POST':
         form = PreliminaryAgreementForm(request.POST, instance=preliminary_agreement)
-        if form.is_valid():
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form.is_valid() and form_activity.is_valid():
+            form_activity.save()
             trip_start_date = form.cleaned_data['trip_start_date']
             trip_end_date = form.cleaned_data['trip_end_date']
             if trip_end_date < trip_start_date:
@@ -327,6 +468,19 @@ def delete_city_to_visit(request, pk):
     travel_route = TravelRoute.objects.get(id=pk)
     num = travel_route.preliminary_agreement_number
     if request.method == 'POST':
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form_activity.is_valid():
+            form_activity.save()
         travel_route.delete()
         return redirect('cities_to_visit_list', pk=num)
     return render(
@@ -343,7 +497,19 @@ def add_city_to_visit(request, pk):
     form = CitiesToVisitForm(initial={'preliminary_agreement_number': pk})
     if request.method == 'POST':
         form = CitiesToVisitForm(request.POST)
-        if form.is_valid():
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form.is_valid() and form_activity.is_valid():
+            form_activity.save()
             city_to_visit = form.cleaned_data['city_to_visit']
             country_to_visit = preliminary_agreement.country_to_visit
             try:
@@ -378,8 +544,20 @@ def choose_country_to_visit(request, pk):
     form = CountryToVisitForm(instance=preliminary_agreement)
     if request.method == 'POST':
         form = CountryToVisitForm(request.POST, instance=preliminary_agreement)
-        if form.is_valid():
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form.is_valid() and form_activity.is_valid():
             form.save()
+            form_activity.save()
             return redirect('cities_to_visit_list', pk=pk)
     return render(
         request,
@@ -395,7 +573,20 @@ def clear_country_to_visit(request, pk):
     preliminary_agreement = PreliminaryAgreement.objects.get(id=pk)
     travel_routes = TravelRoute.objects.filter(preliminary_agreement_number=pk)
     if request.method == 'POST':
-        clear_country = PreliminaryAgreement.objects.filter(id=pk).update(country_to_visit=None)
+        PreliminaryAgreement.objects.filter(id=pk).update(country_to_visit=None)
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form_activity.is_valid():
+            form_activity.save()
         travel_routes.delete()
         return redirect('choose_country_to_visit', pk=pk)
     return render(
@@ -410,6 +601,19 @@ def clear_country_to_visit(request, pk):
 def delete_preliminary_agreement(request, pk):
     preliminary_agreement = PreliminaryAgreement.objects.get(id=pk)
     if request.method == 'POST':
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form_activity.is_valid():
+            form_activity.save()
         preliminary_agreement.delete()
         messages.add_message(request, messages.INFO, 'Предварительное соглашение успешно удалено!')
         return HttpResponseRedirect('/preliminary_agreements')
@@ -426,8 +630,20 @@ def add_preliminary_agreement(request):
     form = PreliminaryAgreementForm()
     if request.method == 'POST':
         form = PreliminaryAgreementForm(request.POST)
-        if form.is_valid():
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form.is_valid() and form_activity.is_valid():
             form.save()
+            form_activity.save()
             messages.add_message(request, messages.INFO, 'Предварительное соглашение успешно добавлено!')
             return HttpResponseRedirect('/preliminary_agreements')
         messages.add_message(request, messages.ERROR, 'Не удалось добавить предварительное соглашение!')
@@ -455,8 +671,20 @@ def edit_contract(request, pk):
     form = ContractForm(instance=contract)
     if request.method == 'POST':
         form = ContractForm(request.POST, instance=contract)
-        if form.is_valid():
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form.is_valid() and form_activity.is_valid():
             form.save()
+            form_activity.save()
             messages.add_message(request, messages.INFO, 'Договор успешно изменён!')
             return HttpResponseRedirect('/contracts')
         messages.add_message(request, messages.ERROR, 'Не удалось изменить договор!')
@@ -475,10 +703,6 @@ def get_hotel_reservations(request, pk):
     preliminary_agreement_number = contract.preliminary_agreement_number
     travel_routes = TravelRoute.objects.filter(preliminary_agreement_number=preliminary_agreement_number)
     hotel_reservations = HotelReservation.objects.filter(contract_number=pk)
-    # try:
-    #     travel_routes_no_hotel = HotelReservation.objects.filter(travel_route=preliminary_agreement_number)
-    # except ObjectDoesNotExist:
-    #     right_country = None
     return render(
         request,
         'administrator/contracts/hotel_reservations/hotel_reservations_list.html',
@@ -493,6 +717,19 @@ def get_hotel_reservations(request, pk):
 def delete_contract(request, pk):
     contract = Contract.objects.get(id=pk)
     if request.method == 'POST':
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form_activity.is_valid():
+            form_activity.save()
         contract.delete()
         messages.add_message(request, messages.INFO, 'Договор успешно удалён!')
         return HttpResponseRedirect('/contracts')
@@ -509,8 +746,20 @@ def add_contract(request):
     form = ContractForm()
     if request.method == 'POST':
         form = ContractForm(request.POST)
-        if form.is_valid():
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form.is_valid() and form_activity.is_valid():
             form.save()
+            form_activity.save()
             messages.add_message(request, messages.INFO, 'Договор успешно добавлен!')
             return HttpResponseRedirect('/contracts')
         messages.add_message(request, messages.ERROR, 'Не удалось добавить договор!')
@@ -543,7 +792,19 @@ def edit_payment(request, pk):
     payment_amount = int(currency_instance.rate) / int(currency_instance.amount) * int(contract.sum)
     if request.method == 'POST':
         form = PaymentForm(request.POST, instance=payment)
-        if form.is_valid():
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form.is_valid() and form_activity.is_valid():
+            form_activity.save()
             payment.sum_in_rubles = payment_amount
             form.save()
             messages.add_message(request, messages.INFO, 'Оплата успешно изменена!')
@@ -562,6 +823,19 @@ def edit_payment(request, pk):
 def delete_payment(request, pk):
     payment = Payment.objects.get(id=pk)
     if request.method == 'POST':
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form_activity.is_valid():
+            form_activity.save()
         payment.delete()
         messages.add_message(request, messages.INFO, 'Оплата успешно удалена!')
         return HttpResponseRedirect('/payments')
@@ -578,7 +852,19 @@ def add_payment(request):
     form = PaymentForm()
     if request.method == 'POST':
         form = PaymentForm(request.POST)
-        if form.is_valid():
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form.is_valid() and form_activity.is_valid():
+            form_activity.save()
             payment_instance = form.save()
             payment_id = payment_instance.id
             form.save()

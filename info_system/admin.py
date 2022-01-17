@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import (
+    Activity,
     City,
     Client,
     Country,
@@ -18,7 +19,11 @@ from .models import (
     Synchronization,
     Trip
 )
-# from import_export.admin import ImportExportActionModelAdmin
+
+
+class ActivityAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user_id', 'date', 'time', 'day_activity', 'night_activity')
+    list_filter = ('user_id', 'date')
 
 
 class CityAdmin(admin.ModelAdmin):
@@ -117,6 +122,7 @@ class TripAdmin(admin.ModelAdmin):
     search_fields = ('id', 'contract_number')
 
 
+admin.site.register(Activity, ActivityAdmin)
 admin.site.register(City, CityAdmin)
 admin.site.register(Client, ClientAdmin)
 admin.site.register(Country, CountryAdmin)
