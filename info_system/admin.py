@@ -68,7 +68,7 @@ class EmployeePositionAdmin(admin.ModelAdmin):
 
 
 class EmployeeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'surname', 'first_middle_name', 'gender', 'position', 'organization', 'date_of_birth', 'photo')
+    list_display = ('id', 'surname', 'first_middle_name', 'gender', 'position', 'organization', 'date_of_birth', 'photo', 'user_auth')
     list_filter = ('gender', 'position', 'organization')
     search_fields = ('id', 'surname')
 

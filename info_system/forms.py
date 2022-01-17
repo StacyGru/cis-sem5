@@ -9,7 +9,7 @@ from .models import (
     Contract,
     TravelRoute,
     Payment,
-    Activity
+    Activity, AuthUser
 )
 from django.forms.widgets import ClearableFileInput
 from django.utils.translation import ugettext_lazy
@@ -278,3 +278,9 @@ class UserActivityForm(forms.ModelForm):
     class Meta:
         model = Activity
         fields = ['user_id', 'date', 'time', 'day_activity', 'night_activity']
+
+
+class AddUserAuthForm(forms.ModelForm):
+    class Meta:
+        model = AuthUser
+        fields = ['password', 'last_login', 'username', 'date_joined']

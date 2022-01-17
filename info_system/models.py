@@ -123,6 +123,23 @@ class EmployeePosition(models.Model):
         return self.name
 
 
+class AuthUser(models.Model):
+    password = models.CharField(max_length=128)
+    last_login = models.DateTimeField(blank=True, null=True)
+    is_superuser = models.IntegerField(default=False, blank=True, null=True)
+    username = models.CharField(unique=True, max_length=150)
+    first_name = models.CharField(max_length=150, blank=True, null=True)
+    last_name = models.CharField(max_length=150, blank=True, null=True)
+    email = models.CharField(max_length=254, blank=True, null=True)
+    is_staff = models.IntegerField(default=True)
+    is_active = models.IntegerField(default=True)
+    date_joined = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'auth_user'
+
+
 class Employee(models.Model):
     surname = models.CharField(max_length=64)
     first_middle_name = models.CharField(db_column='first&middle_name', max_length=128)  # Field renamed to remove unsuitable characters.
@@ -131,6 +148,7 @@ class Employee(models.Model):
     organization = models.ForeignKey(Organization, models.DO_NOTHING, db_column='organization')
     date_of_birth = models.DateField(blank=True, null=True)
     photo = models.ImageField(blank=True, null=True)
+    user_auth = models.ForeignKey(AuthUser, models.DO_NOTHING, db_column='user_auth', unique=True)
 
     class Meta:
         managed = False
@@ -342,23 +360,6 @@ class AuthPermission(models.Model):
         managed = False
         db_table = 'auth_permission'
         unique_together = (('content_type', 'codename'),)
-
-
-class AuthUser(models.Model):
-    password = models.CharField(max_length=128)
-    last_login = models.DateTimeField(blank=True, null=True)
-    is_superuser = models.IntegerField()
-    username = models.CharField(unique=True, max_length=150)
-    first_name = models.CharField(max_length=150)
-    last_name = models.CharField(max_length=150)
-    email = models.CharField(max_length=254)
-    is_staff = models.IntegerField()
-    is_active = models.IntegerField()
-    date_joined = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user'
 
 
 class AuthUserGroups(models.Model):

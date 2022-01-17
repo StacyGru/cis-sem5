@@ -1,6 +1,7 @@
 import datetime
 
 from django.contrib import messages
+from django.db import transaction
 from django.shortcuts import render, redirect
 from django.http.response import HttpResponseRedirect
 from django.views.generic import View
@@ -17,7 +18,7 @@ from .forms import (
     CountryToVisitForm,
     CitiesToVisitForm,
     PaymentForm,
-    UserActivityForm
+    UserActivityForm, AddUserAuthForm
 )
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
@@ -32,7 +33,7 @@ from .models import (
     Payment,
     CurrencyRate,
     HotelReservation,
-    Activity
+    Activity, AuthUser
 )
 
 
@@ -81,6 +82,7 @@ class ProfileView(View):
         else:
             status = 'не определился'
         user_id = user.id
+        employee = Employee.objects.get(user_auth=request.user.pk)
         return render(
             request,
             'profile.html',
@@ -90,7 +92,8 @@ class ProfileView(View):
                 'user_id': user_id,
                 'status': status,
                 'daytime': month_activities_daytime,
-                'nighttime': month_activities_nighttime
+                'nighttime': month_activities_nighttime,
+                'employee': employee
             }
         )
 
@@ -325,8 +328,13 @@ def edit_employee(request, pk):
                  'time': str(datetime.datetime.now().time()),
                  'day_activity': False, 'night_activity': True})
         if form.is_valid() and form_activity.is_valid():
-            form.save()
-            form_activity.save()
+            with transaction.atomic():
+                employee_instance = Employee.objects.get(id=pk)
+                user_instance = AuthUser.objects.get(id=employee_instance.user_auth.id)
+                form.save(commit=False)
+                employee_instance.user_auth = user_instance
+                form.save()
+                form_activity.save()
             messages.add_message(request, messages.INFO, 'Сотрудник успешно изменён!')
             return HttpResponseRedirect('/employees')
         messages.add_message(request, messages.ERROR, 'Не удалось изменить сотрудника!')
@@ -383,9 +391,20 @@ def add_employee(request):
                 {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
                  'time': str(datetime.datetime.now().time()),
                  'day_activity': False, 'night_activity': True})
-        if form.is_valid() and form_activity.is_valid():
-            form.save()
-            form_activity.save()
+        last_id = AuthUser.objects.latest('id').id
+        new_id = int(last_id) + 1
+        generate_username = 'user' + str(new_id)
+        form_user = AddUserAuthForm(
+            {'password': 'new_user',
+             'last_login': str(datetime.datetime.now()), 'username': generate_username,
+             'date_joined': str(datetime.datetime.now())})
+        if form.is_valid() and form_activity.is_valid() and form_user.is_valid():
+            with transaction.atomic():
+                user_instance = form_user.save()
+                employee_instance = form.save(commit=False)
+                employee_instance.user_auth = user_instance
+                form.save()
+                form_activity.save()
             messages.add_message(request, messages.INFO, 'Сотрудник успешно добавлен!')
             return HttpResponseRedirect('/employees')
         messages.add_message(request, messages.ERROR, 'Не удалось добавить сотрудника!')
@@ -439,7 +458,6 @@ def edit_preliminary_agreement(request, pk):
                 form.save()
                 messages.add_message(request, messages.INFO, 'Предварительное соглашение успешно изменено!')
                 return HttpResponseRedirect('/preliminary_agreements')
-
     return render(
         request,
         'administrator/preliminary_agreements/edit_preliminary_agreement.html',

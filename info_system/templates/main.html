@@ -28,7 +28,7 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
 
-                        {% if request.user|has_group:"Администраторы" %}
+                        {% if request.user|has_group:"администратор" %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'employees' %}">Сотрудники</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'clients' %}">Клиенты</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'preliminary_agreements' %}">Предварительные соглашения</a></li>
@@ -48,7 +48,7 @@
                             </ul>
                         </li>
 
-                        {% elif request.user|has_group:"Бухгалтеры" %}
+                        {% elif request.user|has_group:"бухгалтер" %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'accountant/employees' %}">Сотрудники</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'accountant/clients' %}">Клиенты</a></li>
                         <li class="nav-item dropdown">
@@ -59,7 +59,7 @@
                             </ul>
                         </li>
 
-                        {% elif request.user|has_group:"Менеджеры" %}
+                        {% elif request.user|has_group:"менеджер" %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'manager/employees' %}">Сотрудники</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'clients' %}">Клиенты</a></li>
                         <li class="nav-item dropdown">
@@ -70,7 +70,7 @@
                             </ul>
                         </li>
 
-                        {% elif request.user|has_group:"Агенты" %}
+                        {% elif request.user|has_group:"агент" %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'agent/employees' %}">Сотрудники</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'clients' %}">Клиенты</a></li>
                         <li class="nav-item dropdown">
