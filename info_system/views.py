@@ -98,7 +98,7 @@ class ProfileView(View):
         )
 
 
-# -----------------------------------------------------АДМИНИСТРАТОР----------------------------------------------------
+# ------------------------------------------------- FULL CRUD ----------------------------------------------------------
 
 
 class ClientsView(View):
@@ -111,7 +111,7 @@ class ClientsView(View):
             clients = Client.objects.all()
         return render(
             request,
-            'administrator/clients/clients_list.html',
+            'full_crud/clients/clients_list.html',
             {'clients': clients}
         )
 
@@ -144,7 +144,7 @@ def edit_client(request, pk):
         messages.add_message(request, messages.ERROR, 'Не удалось изменить клиента!')
     return render(
         request,
-        'administrator/clients/edit_client.html',
+        'full_crud/clients/edit_client.html',
         {
             'client': client,
             'form': form,
@@ -176,7 +176,7 @@ def add_client_passport(request, pk):
         messages.add_message(request, messages.ERROR, 'Не удалось добавить паспортные данные клиента!')
     return render(
         request,
-        'administrator/clients/add_client_passport.html',
+        'full_crud/clients/add_client_passport.html',
         {
             'form': form
         }
@@ -212,7 +212,7 @@ def edit_client_passport(request, pk):
             messages.add_message(request, messages.ERROR, 'Не удалось изменить клиента!')
         return render(
             request,
-            'administrator/clients/edit_client_passport.html',
+            'full_crud/clients/edit_client_passport.html',
             {
                 'passport': passport,
                 'client': client,
@@ -222,7 +222,7 @@ def edit_client_passport(request, pk):
     else:
         return render(
             request,
-            'administrator/clients/add_client_passport.html',
+            'full_crud/clients/add_client_passport.html',
             {
                 'client': client
             }
@@ -250,7 +250,7 @@ def delete_client(request, pk):
         return HttpResponseRedirect('/clients')
     return render(
         request,
-        'administrator/clients/delete_client.html',
+        'full_crud/clients/delete_client.html',
         {
             'client': client
         }
@@ -280,7 +280,7 @@ def add_client(request):
         messages.add_message(request, messages.ERROR, 'Не удалось добавить клиента!')
     return render(
         request,
-        'administrator/clients/add_client.html',
+        'full_crud/clients/add_client.html',
         {
             'form': form
         }
@@ -304,7 +304,7 @@ class EmployeesView(View):
             employees = Employee.objects.all()
         return render(
             request,
-            'administrator/employees/employees_list.html',
+            'full_crud/employees/employees_list.html',
             {
                 'employees': employees
             }
@@ -340,7 +340,7 @@ def edit_employee(request, pk):
         messages.add_message(request, messages.ERROR, 'Не удалось изменить сотрудника!')
     return render(
         request,
-        'administrator/employees/edit_employee.html',
+        'full_crud/employees/edit_employee.html',
         {
             'employee': employee,
             'form': form
@@ -369,7 +369,7 @@ def delete_employee(request, pk):
         return HttpResponseRedirect('/employees')
     return render(
         request,
-        'administrator/employees/delete_employee.html',
+        'full_crud/employees/delete_employee.html',
         {
             'employee': employee
         }
@@ -410,7 +410,7 @@ def add_employee(request):
         messages.add_message(request, messages.ERROR, 'Не удалось добавить сотрудника!')
     return render(
         request,
-        'administrator/employees/add_employee.html',
+        'full_crud/employees/add_employee.html',
         {
             'form': form
         }
@@ -422,7 +422,7 @@ class PreliminaryAgreementsView(View):
         preliminary_agreements = PreliminaryAgreement.objects.all()
         return render(
             request,
-            'administrator/preliminary_agreements/preliminary_agreements_list.html',
+            'full_crud/preliminary_agreements/preliminary_agreements_list.html',
             {'preliminary_agreements': preliminary_agreements}
         )
 
@@ -460,7 +460,7 @@ def edit_preliminary_agreement(request, pk):
                 return HttpResponseRedirect('/preliminary_agreements')
     return render(
         request,
-        'administrator/preliminary_agreements/edit_preliminary_agreement.html',
+        'full_crud/preliminary_agreements/edit_preliminary_agreement.html',
         {
             'preliminary_agreement': preliminary_agreement,
             'travel_routes': travel_routes,
@@ -474,7 +474,7 @@ def get_cities_to_visit(request, pk):
     preliminary_agreement = PreliminaryAgreement.objects.get(id=pk)
     return render(
         request,
-        'administrator/preliminary_agreements/cities_to_visit/cities_to_visit_list.html',
+        'full_crud/preliminary_agreements/cities_to_visit/cities_to_visit_list.html',
         {
             'travel_routes': travel_routes,
             'preliminary_agreement': preliminary_agreement
@@ -503,7 +503,7 @@ def delete_city_to_visit(request, pk):
         return redirect('cities_to_visit_list', pk=num)
     return render(
         request,
-        'administrator/preliminary_agreements/cities_to_visit/delete_city_to_visit.html',
+        'full_crud/preliminary_agreements/cities_to_visit/delete_city_to_visit.html',
         {
             'travel_route': travel_route
         }
@@ -549,7 +549,7 @@ def add_city_to_visit(request, pk):
                 return redirect('cities_to_visit_list', pk=pk)
     return render(
         request,
-        'administrator/preliminary_agreements/cities_to_visit/add_city_to_visit.html',
+        'full_crud/preliminary_agreements/cities_to_visit/add_city_to_visit.html',
         {
             'form': form,
             'preliminary_agreement': preliminary_agreement
@@ -579,7 +579,7 @@ def choose_country_to_visit(request, pk):
             return redirect('cities_to_visit_list', pk=pk)
     return render(
         request,
-        'administrator/preliminary_agreements/cities_to_visit/choose_country_to_visit.html',
+        'full_crud/preliminary_agreements/cities_to_visit/choose_country_to_visit.html',
         {
             'form': form,
             'preliminary_agreement': preliminary_agreement
@@ -609,7 +609,7 @@ def clear_country_to_visit(request, pk):
         return redirect('choose_country_to_visit', pk=pk)
     return render(
         request,
-        'administrator/preliminary_agreements/cities_to_visit/clear_country_to_visit.html',
+        'full_crud/preliminary_agreements/cities_to_visit/clear_country_to_visit.html',
         {
             'preliminary_agreement': preliminary_agreement
         }
@@ -637,7 +637,7 @@ def delete_preliminary_agreement(request, pk):
         return HttpResponseRedirect('/preliminary_agreements')
     return render(
         request,
-        'administrator/preliminary_agreements/delete_preliminary_agreement.html',
+        'full_crud/preliminary_agreements/delete_preliminary_agreement.html',
         {
             'preliminary_agreement': preliminary_agreement
         }
@@ -667,7 +667,7 @@ def add_preliminary_agreement(request):
         messages.add_message(request, messages.ERROR, 'Не удалось добавить предварительное соглашение!')
     return render(
         request,
-        'administrator/preliminary_agreements/add_preliminary_agreement.html',
+        'full_crud/preliminary_agreements/add_preliminary_agreement.html',
         {
             'form': form
         }
@@ -679,7 +679,7 @@ class ContractsView(View):
         contracts = Contract.objects.all()
         return render(
             request,
-            'administrator/contracts/contracts_list.html',
+            'full_crud/contracts/contracts_list.html',
             {'contracts': contracts}
         )
 
@@ -708,7 +708,7 @@ def edit_contract(request, pk):
         messages.add_message(request, messages.ERROR, 'Не удалось изменить договор!')
     return render(
         request,
-        'administrator/contracts/edit_contract.html',
+        'full_crud/contracts/edit_contract.html',
         {
             'contract': contract,
             'form': form
@@ -724,7 +724,7 @@ def get_hotel_reservations(request, pk):
     travel_routes = TravelRoute.objects.filter(preliminary_agreement_number=preliminary_agreement_number)
     return render(
         request,
-        'administrator/contracts/hotel_reservations/hotel_reservations_view.html',
+        'full_crud/contracts/hotel_reservations/hotel_reservations_view.html',
         {
             'contract': contract_instance,
             'hotel_reservations': hotel_reservations,
@@ -772,7 +772,7 @@ def edit_hotel_reservation(request, pk):
                 return redirect('hotel_reservations_list', pk=contract.id)
     return render(
         request,
-        'administrator/contracts/hotel_reservations/edit_hotel_reservation.html',
+        'full_crud/contracts/hotel_reservations/edit_hotel_reservation.html',
         {
             'hotel_reservation': hotel_reservation,
             'contract': contract,
@@ -815,7 +815,7 @@ def add_hotel_reservation(request, **kwargs):
                 return redirect('hotel_reservations_list', pk=kwargs.get('contract_pk'))
     return render(
         request,
-        'administrator/contracts/hotel_reservations/add_hotel_reservation.html',
+        'full_crud/contracts/hotel_reservations/add_hotel_reservation.html',
         {
             'form': form,
             'contract': contract_instance,
@@ -845,7 +845,7 @@ def delete_contract(request, pk):
         return HttpResponseRedirect('/contracts')
     return render(
         request,
-        'administrator/contracts/delete_contract.html',
+        'full_crud/contracts/delete_contract.html',
         {
             'contract': contract
         }
@@ -875,7 +875,7 @@ def add_contract(request):
         messages.add_message(request, messages.ERROR, 'Не удалось добавить договор!')
     return render(
         request,
-        'administrator/contracts/add_contract.html',
+        'full_crud/contracts/add_contract.html',
         {
             'form': form
         }
@@ -887,7 +887,7 @@ class PaymentsView(View):
         payments = Payment.objects.all()
         return render(
             request,
-            'administrator/payments/payments_list.html',
+            'full_crud/payments/payments_list.html',
             {'payments': payments}
         )
 
@@ -921,7 +921,7 @@ def edit_payment(request, pk):
             return HttpResponseRedirect('/payments')
     return render(
         request,
-        'administrator/payments/edit_payment.html',
+        'full_crud/payments/edit_payment.html',
         {
             'payment': payment,
             'form': form,
@@ -951,7 +951,7 @@ def delete_payment(request, pk):
         return HttpResponseRedirect('/payments')
     return render(
         request,
-        'administrator/payments/delete_payment.html',
+        'full_crud/payments/delete_payment.html',
         {
             'payment': payment
         }
@@ -982,7 +982,7 @@ def add_payment(request):
             return redirect('edit_payment', pk=payment_id)
     return render(
         request,
-        'administrator/payments/add_payment.html',
+        'full_crud/payments/add_payment.html',
         {
             'form': form
         }
@@ -1014,17 +1014,17 @@ def currency_rate(request):
 
     return render(
         request,
-        'administrator/payments/currency_rates.html',
+        'full_crud/payments/currency_rates.html',
         {
             'currency_list': currency_list
         }
     )
 
 
-# -------------------------------------------------------БУХГАЛТЕР------------------------------------------------------
+# -------------------------------------------------------VIEW ONLY------------------------------------------------------
 
 
-class AccountantClientsView(View):
+class ClientsViewOnly(View):
     def get(self, request, *args, **kwargs):
         search_query = request.GET.get('search', '')
         if search_query:
@@ -1034,12 +1034,12 @@ class AccountantClientsView(View):
             clients = Client.objects.all()
         return render(
             request,
-            'accountant/clients/clients_list.html',
+            'view_only/clients_list.html',
             {'clients': clients}
         )
 
 
-class AccountantEmployeesView(View):
+class EmployeesViewOnly(View):
     def get(self, request, *args, **kwargs):
         search_query = request.GET.get('search', '')
         filters = request.GET.get('employee_position', '')
@@ -1056,62 +1056,18 @@ class AccountantEmployeesView(View):
             employees = Employee.objects.all()
         return render(
             request,
-            'accountant/employees/employees_list.html',
+            'view_only/employees_list.html',
             {
                 'employees': employees
             }
         )
 
 
-# -------------------------------------------------------МЕНЕДЖЕР-------------------------------------------------------
-
-
-class ManagerEmployeesView(View):
+class ContractsViewOnly(View):
     def get(self, request, *args, **kwargs):
-        search_query = request.GET.get('search', '')
-        filters = request.GET.get('employee_position', '')
-        if search_query and filters:
-            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(
-                first_middle_name__icontains=search_query)
-            employees = employees.filter(position=filters)
-        elif search_query:
-            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(
-                first_middle_name__icontains=search_query)
-        elif filters:
-            employees = Employee.objects.filter(position=filters)
-        else:
-            employees = Employee.objects.all()
+        contracts = Contract.objects.all()
         return render(
             request,
-            'manager/employees/employees_list.html',
-            {
-                'employees': employees
-            }
-        )
-
-
-# -------------------------------------------------------МЕНЕДЖЕР-------------------------------------------------------
-
-
-class AgentEmployeesView(View):
-    def get(self, request, *args, **kwargs):
-        search_query = request.GET.get('search', '')
-        filters = request.GET.get('employee_position', '')
-        if search_query and filters:
-            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(
-                first_middle_name__icontains=search_query)
-            employees = employees.filter(position=filters)
-        elif search_query:
-            employees = Employee.objects.filter(surname__icontains=search_query) | Employee.objects.filter(
-                first_middle_name__icontains=search_query)
-        elif filters:
-            employees = Employee.objects.filter(position=filters)
-        else:
-            employees = Employee.objects.all()
-        return render(
-            request,
-            'agent/employees/employees_list.html',
-            {
-                'employees': employees
-            }
+            'view_only/contracts_list.html',
+            {'contracts': contracts}
         )

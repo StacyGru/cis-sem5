@@ -1,0 +1,75 @@
+{% extends 'main.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{% load info_system_extras %}
+
+{% block content %}
+    {% if request.user.is_authenticated %}
+        {% if request.user|has_group:"администратор" or request.user|has_group:"менеджер" %}
+
+            <h3 class="mt-5 mb-5 text-center">Договор {{ contract.id }}</h3>
+
+            <div class="row justify-content-md-center" style="">
+                <div class="col col-lg-2 justify-content-center">
+                    </div>
+                <div class="col-lg-6">
+
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <ul class="nav nav-tabs card-header-tabs">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'edit_contract' contract.id %}">Основное</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="{% url 'hotel_reservations_list' contract.id %}">Бронирование отелей</a>
+                                </li>
+                            </ul>
+                        </div>
+                    <div class="card-body ">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Город посещения</th>
+                                    <th>Отель</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for travel_route in travel_routes %}
+                                <tr>
+                                    <td>{{ travel_route.city_to_visit.city }}</td>
+                                    {% if travel_route.hotel_reservation %}
+                                        <td>{{ travel_route.hotel_reservation.hotel.hotel_name }}</td>
+                                        <td><a href="{% url 'edit_hotel_reservation' travel_route.hotel_reservation.id %}" class="btn btn-warning">Изменить</a></td>
+                                    {% else %}
+                                        <td></td>
+                                        <td><a href="{% url 'add_hotel_reservation' contract.id travel_route.id %}" class="btn btn-success">Добавить</a></td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                </div>
+                <div class="col col-lg-2">
+                    </div>
+            </div>
+
+        {% else %}
+            <div class="text-center mt-5">
+                <h1>Доступ запрещён!</h1>
+                <p class="lead">К сожалению, ваша роль в системе не позволяет просматривать эту страницу</p>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="text-center mt-5">
+            <h1>Вы не авторизованы!</h1>
+            <p class="lead">Для получения доступа к функционалу приложения, пожалуйста, авторизуйтесь</p>
+        </div>
+    {% endif %}
+{% endblock %}

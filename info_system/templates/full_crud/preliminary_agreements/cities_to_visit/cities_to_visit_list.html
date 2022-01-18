@@ -1,0 +1,71 @@
+{% extends 'main.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{% load info_system_extras %}
+
+{% block content %}
+    {% if request.user.is_authenticated %}
+        {% if not request.user|has_group:"бухгалтер" %}
+
+            <h3 class="mt-5 mb-5 text-center">Предварительное соглашение {{ preliminary_agreement.id }}</h3>
+
+            <div class="row justify-content-md-center" style="">
+                <div class="col col-lg-2 justify-content-center">
+                    </div>
+                <div class="col-lg-6">
+
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <ul class="nav nav-tabs card-header-tabs">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'edit_preliminary_agreement' preliminary_agreement.id %}">Основное</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="{% url 'cities_to_visit_list' preliminary_agreement.id %}">Города посещения</a>
+                                </li>
+
+                            </ul>
+                        </div>
+                    <div class="card-body ">
+                        <h5 class="mb-3">Страна:</h5>
+                        <p class="mb-5">{{ preliminary_agreement.country_to_visit }}
+                            <a href="{% url 'clear_country_to_visit' preliminary_agreement.id %}" class="btn btn-warning ml-3">Изменить</a>
+                        </p>
+
+                        <h5 class="mb-3">Города:</h5>
+                        <table class="table">
+                            {% for travel_route in travel_routes %}
+                            <tr>
+                                <td>{{ travel_route.city_to_visit }}</td>
+                                <td>
+                                    <a href="{% url 'delete_city_to_visit' travel_route.id %}" class="btn btn-danger">Удалить</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                         <a href="{% url 'add_city_to_visit' preliminary_agreement.id %}" class="btn btn-success">Добавить город</a>
+
+                    </div>
+                    </div>
+
+                </div>
+                <div class="col col-lg-2">
+                    </div>
+            </div>
+
+        {% else %}
+            <div class="text-center mt-5">
+                <h1>Доступ запрещён!</h1>
+                <p class="lead">К сожалению, ваша роль в системе не позволяет просматривать эту страницу</p>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="text-center mt-5">
+            <h1>Вы не авторизованы!</h1>
+            <p class="lead">Для получения доступа к функционалу приложения, пожалуйста, авторизуйтесь</p>
+        </div>
+    {% endif %}
+{% endblock %}

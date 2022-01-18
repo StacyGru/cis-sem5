@@ -49,8 +49,16 @@
                         </li>
 
                         {% elif request.user|has_group:"бухгалтер" %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'accountant/employees' %}">Сотрудники</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'accountant/clients' %}">Клиенты</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'view_only/employees' %}">Сотрудники</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'view_only/clients' %}">Клиенты</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'view_only/contracts' %}">Договоры</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Оплаты</a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="{% url 'payments' %}">Оплаты</a></li>
+                                <li><a class="dropdown-item" href="{% url 'currency_rates' %}">Курс валют</a></li>
+                            </ul>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Бухгалтер</a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
@@ -60,8 +68,10 @@
                         </li>
 
                         {% elif request.user|has_group:"менеджер" %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'manager/employees' %}">Сотрудники</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'view_only/employees' %}">Сотрудники</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'clients' %}">Клиенты</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'preliminary_agreements' %}">Предварительные соглашения</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'contracts' %}">Договоры</a></li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Менеджер</a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
@@ -71,8 +81,9 @@
                         </li>
 
                         {% elif request.user|has_group:"агент" %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'agent/employees' %}">Сотрудники</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'view_only/employees' %}">Сотрудники</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'clients' %}">Клиенты</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'preliminary_agreements' %}">Предварительные соглашения</a></li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Агент</a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">

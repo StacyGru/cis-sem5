@@ -1,0 +1,28 @@
+{% extends 'main.html' %}
+{% load info_system_extras %}
+
+{% block content %}
+    {% if request.user.is_authenticated %}
+        {% if request.user|has_group:"администратор" or request.user|has_group:"менеджер" %}
+
+            <h3 class="mt-5 mb-5 text-center">Удаление договора {{ contract.id }}</h3>
+
+            <form action="" method="POST" class="text-center">
+                {% csrf_token %}
+                <p>Вы уверены что хотите удалить данный договор?</p>
+                <input type="submit" class="btn btn-danger" value="Удалить">
+            </form>
+
+        {% else %}
+            <div class="text-center mt-5">
+                <h1>Доступ запрещён!</h1>
+                <p class="lead">К сожалению, ваша роль в системе не позволяет просматривать эту страницу</p>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="text-center mt-5">
+            <h1>Вы не авторизованы!</h1>
+            <p class="lead">Для получения доступа к функционалу приложения, пожалуйста, авторизуйтесь</p>
+        </div>
+    {% endif %}
+{% endblock %}

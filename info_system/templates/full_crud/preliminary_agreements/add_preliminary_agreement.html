@@ -1,0 +1,50 @@
+{% extends 'main.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{% load info_system_extras %}
+
+{% block content %}
+    {% if request.user.is_authenticated %}
+        {% if not request.user|has_group:"бухгалтер" %}
+
+            <h3 class="mt-5 mb-5 text-center">Добавление предварительного соглашения</h3>
+
+            <div class="row justify-content-md-center" style="">
+                <div class="col col-lg-2 justify-content-center">
+                    </div>
+                <div class="col-lg-6">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mt-3" role="alert">
+                                    <strong>{{ message }}</strong>
+                                    <button type="button" class="btn-close" onclick="this.parentElement.style.display='none';"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        <form action="" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form.media }}
+                            {% bootstrap_form form %}
+                            <input type="submit" class="btn btn-success mt-3 mb-3" value="Добавить">
+                        </form>
+                </div>
+                 <div class="col col-lg-2">
+                    </div>
+            </div>
+
+        {% else %}
+            <div class="text-center mt-5">
+                <h1>Доступ запрещён!</h1>
+                <p class="lead">К сожалению, ваша роль в системе не позволяет просматривать эту страницу</p>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="text-center mt-5">
+            <h1>Вы не авторизованы!</h1>
+            <p class="lead">Для получения доступа к функционалу приложения, пожалуйста, авторизуйтесь</p>
+        </div>
+    {% endif %}
+{% endblock %}

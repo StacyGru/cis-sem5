@@ -5,12 +5,12 @@ from .views import (
     ProfileView,
     ClientsView,
     EmployeesView,
-    AccountantClientsView,
-    AccountantEmployeesView,
-    ManagerEmployeesView,
-    AgentEmployeesView,
     PreliminaryAgreementsView,
-    ContractsView, PaymentsView
+    ContractsView,
+    PaymentsView,
+    ClientsViewOnly,
+    EmployeesViewOnly,
+    ContractsViewOnly
 )
 from django.contrib.auth.views import LogoutView
 from . import views
@@ -21,7 +21,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(next_page="/"), name='logout'),
     path('profile/', ProfileView.as_view(), name='profile'),
 
-    # ----------------------------------------------АДМИНИСТРАТОР-------------------------------------------------------
+    # ----------------------------------------------- FULL CRUD --------------------------------------------------------
     path('clients/', ClientsView.as_view(), name='clients'),
     path('clients/edit_client/<str:pk>/', views.edit_client, name='edit_client'),
     path('clients/edit_client_passport/<str:pk>/', views.edit_client_passport, name='edit_client_passport'),
@@ -58,14 +58,9 @@ urlpatterns = [
     path('payments/delete_payment/<str:pk>/', views.delete_payment, name='delete_payment'),
     path('payments/add_payment/', views.add_payment, name='add_payment'),
 
-    # ------------------------------------------------БУХГАЛТЕР---------------------------------------------------------
-    path('accountant/clients/', AccountantClientsView.as_view(), name='accountant/clients'),
-    path('accountant/employees/', AccountantEmployeesView.as_view(), name='accountant/employees'),
-
-    # -------------------------------------------------МЕНЕДЖЕР---------------------------------------------------------
-    path('manager/employees/', ManagerEmployeesView.as_view(), name='manager/employees'),
-
-    # ---------------------------------------------------АГЕНТ----------------------------------------------------------
-    path('agent/employees/', AgentEmployeesView.as_view(), name='agent/employees')
+    # ------------------------------------------------VIEW ONLY---------------------------------------------------------
+    path('view_only/clients/', ClientsViewOnly.as_view(), name='view_only/clients'),
+    path('view_only/employees/', EmployeesViewOnly.as_view(), name='view_only/employees'),
+    path('view_only/contracts/', ContractsViewOnly.as_view(), name='view_only/contracts'),
 
 ]
