@@ -9,7 +9,7 @@ from .models import (
     Contract,
     TravelRoute,
     Payment,
-    Activity, AuthUser
+    Activity, AuthUser, HotelReservation
 )
 from django.forms.widgets import ClearableFileInput
 from django.utils.translation import ugettext_lazy
@@ -216,13 +216,14 @@ class CitiesToVisitForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['city_to_visit'].label = 'Город посещения'
-        self.fields['preliminary_agreement_number'].label = 'Номер предварительного соглашения'
 
     class Meta:
         model = TravelRoute
-        fields = ['city_to_visit', 'preliminary_agreement_number']
+        fields = ['preliminary_agreement_number', 'city_to_visit', 'cities_order', 'hotel_reservation']
         widgets = {
-            'preliminary_agreement_number': forms.HiddenInput()
+            'preliminary_agreement_number': forms.HiddenInput(),
+            'cities_order': forms.HiddenInput(),
+            'hotel_reservation': forms.HiddenInput()
         }
 
 
@@ -284,3 +285,33 @@ class AddUserAuthForm(forms.ModelForm):
     class Meta:
         model = AuthUser
         fields = ['password', 'last_login', 'username', 'date_joined']
+
+
+class HotelReservationForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['hotel'].label = 'Отель'
+        self.fields['hotel_room'].label = 'Номер в отеле'
+        self.fields['room_type'].label = 'Тип номера'
+        self.fields['check_in_date'].label = 'Дата въезда'
+        self.fields['check_out_date'].label = 'Дата выезда'
+        self.fields['price'].label = 'Сумма'
+
+    class Meta:
+        model = HotelReservation
+        fields = ['hotel', 'contract_number', 'hotel_room', 'room_type', 'check_in_date', 'check_out_date', 'price']
+        widgets = {
+            'check_in_date': DateTimePickerInput(
+                options={
+                    "locale": 'ru',
+                    "format": 'YYYY-MM-DD'
+                }
+            ),
+            'check_out_date': DateTimePickerInput(
+                options={
+                    "locale": 'ru',
+                    "format": 'YYYY-MM-DD'
+                }
+            ),
+            'contract_number': forms.HiddenInput()
+        }

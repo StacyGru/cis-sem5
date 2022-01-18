@@ -206,33 +206,50 @@ class Hotel(models.Model):
         return self.hotel_name
 
 
-class TravelRoute(models.Model):
-    preliminary_agreement_number = models.ForeignKey('PreliminaryAgreement', models.DO_NOTHING, db_column='preliminary_agreement_number')
-    city_to_visit = models.ForeignKey(City, models.DO_NOTHING, db_column='city_to_visit')
-    cities_order = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'travel_route'
-
-    def __str__(self):
-        return str(self.city_to_visit)
-
-
 class HotelReservation(models.Model):
     hotel = models.ForeignKey(Hotel, models.DO_NOTHING, db_column='hotel')
     contract_number = models.ForeignKey(Contract, models.DO_NOTHING, db_column='contract_number')
-    travel_route = models.ForeignKey(TravelRoute, models.DO_NOTHING, db_column='travel_route')
     hotel_room = models.IntegerField()
     room_type = models.CharField(max_length=128, choices=ROOM_TYPE_CHOICES)
     check_in_date = models.DateField(db_column='check-in_date')  # Field renamed to remove unsuitable characters.
     check_out_date = models.DateField()
-    currency = models.ForeignKey(CurrencyRate, models.DO_NOTHING, db_column='currency')
     price = models.IntegerField()
 
     class Meta:
         managed = False
         db_table = 'hotel_reservation'
+
+    def __str__(self):
+        return str(self.id)
+
+
+class PreliminaryAgreement(models.Model):
+    date_time = models.DateTimeField(db_column='date&time')  # Field renamed to remove unsuitable characters.
+    organization = models.ForeignKey(Organization, models.DO_NOTHING, db_column='organization')
+    employee = models.ForeignKey(Employee, models.DO_NOTHING, db_column='employee')
+    client = models.ForeignKey(Client, models.DO_NOTHING, db_column='client')
+    number_of_trip_participants = models.IntegerField()
+    country_to_visit = models.ForeignKey(Country, models.DO_NOTHING, db_column='country_to_visit', blank=True, null=True)
+    trip_start_date = models.DateField()
+    trip_end_date = models.DateField()
+
+    class Meta:
+        managed = False
+        db_table = 'preliminary_agreement'
+
+    def __str__(self):
+        return str(self.id)
+
+
+class TravelRoute(models.Model):
+    preliminary_agreement_number = models.ForeignKey(PreliminaryAgreement, models.DO_NOTHING, db_column='preliminary_agreement_number')
+    city_to_visit = models.ForeignKey(City, models.DO_NOTHING, db_column='city_to_visit')
+    cities_order = models.IntegerField(blank=True, null=True)
+    hotel_reservation = models.ForeignKey(HotelReservation, models.DO_NOTHING, db_column='hotel_reservation', blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'travel_route'
 
     def __str__(self):
         return str(self.id)
@@ -265,24 +282,6 @@ class Payment(models.Model):
     class Meta:
         managed = False
         db_table = 'payment'
-
-    def __str__(self):
-        return str(self.id)
-
-
-class PreliminaryAgreement(models.Model):
-    date_time = models.DateTimeField(db_column='date&time')  # Field renamed to remove unsuitable characters.
-    organization = models.ForeignKey(Organization, models.DO_NOTHING, db_column='organization')
-    employee = models.ForeignKey(Employee, models.DO_NOTHING, db_column='employee')
-    client = models.ForeignKey(Client, models.DO_NOTHING, db_column='client')
-    number_of_trip_participants = models.IntegerField()
-    country_to_visit = models.ForeignKey(Country, models.DO_NOTHING, db_column='country_to_visit', blank=True, null=True)
-    trip_start_date = models.DateField()
-    trip_end_date = models.DateField()
-
-    class Meta:
-        managed = False
-        db_table = 'preliminary_agreement'
 
     def __str__(self):
         return str(self.id)

@@ -1,0 +1,52 @@
+{% extends 'main.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+
+{% block content %}
+
+<h3 class="mt-5 mb-5 text-center">Договор {{ contract.id }}</h3>
+
+<div class="row justify-content-md-center" style="">
+    <div class="col col-lg-2 justify-content-center">
+        </div>
+    <div class="col-lg-6">
+
+        <div class="card mb-3">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'edit_contract' contract.id %}">Основное</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'hotel_reservations_list' contract.id %}">Бронирование отелей</a>
+                    </li>
+                </ul>
+            </div>
+        <div class="card-body ">
+            <h5 class="mb-3 text-center">Город: {{ travel_route_instance.city_to_visit.city }}</h5>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show mt-3" role="alert">
+                        <strong>{{ message }}</strong>
+                        <button type="button" class="btn-close" onclick="this.parentElement.style.display='none';"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <form action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.media }}
+                {% bootstrap_form form %}
+                <input type="submit" class="btn btn-success mt-3 mr-3" value="Добавить">
+            </form>
+        </div>
+    </div>
+
+    </div>
+    <div class="col col-lg-2">
+        </div>
+</div>
+
+{% endblock %}

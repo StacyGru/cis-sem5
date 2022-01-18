@@ -31,19 +31,26 @@
                     <tr>
                         <th>Город посещения</th>
                         <th>Отель</th>
+                        <th></th>
                     </tr>
                 </thead>
+                <tbody>
                 {% for travel_route in travel_routes %}
                     <tr>
-                        <td>{{ travel_route.city_to_visit }}</td>
-                        <td><a href="#" class="btn btn-success">Добавить отель</a></td>
+                        <td>{{ travel_route.city_to_visit.city }}</td>
+                        {% if travel_route.hotel_reservation %}
+                            <td>{{ travel_route.hotel_reservation.hotel.hotel_name }}</td>
+                            <td><a href="{% url 'edit_hotel_reservation' travel_route.hotel_reservation.id %}" class="btn btn-warning">Изменить</a></td>
+                        {% else %}
+                            <td></td>
+                            <td><a href="{% url 'add_hotel_reservation' contract.id travel_route.id %}" class="btn btn-success">Добавить</a></td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
-
+                </tbody>
             </table>
-
         </div>
-        </div>
+    </div>
 
 
 

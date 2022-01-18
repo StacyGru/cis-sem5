@@ -81,7 +81,7 @@ class HotelAdmin(admin.ModelAdmin):
 
 
 class HotelReservationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'hotel', 'contract_number', 'travel_route', 'hotel_room', 'room_type', 'check_in_date', 'check_out_date', 'currency', 'price')
+    list_display = ('id', 'hotel', 'contract_number', 'hotel_room', 'room_type', 'check_in_date', 'check_out_date', 'price')
     list_filter = ('hotel', 'room_type', 'check_in_date', 'check_out_date')
     search_fields = ('id', 'contract_number')
 
@@ -106,7 +106,7 @@ class PreliminaryAgreementAdmin(admin.ModelAdmin):
 
 
 class TravelRouteAdmin(admin.ModelAdmin):
-    list_display = ('id', 'preliminary_agreement_number', 'city_to_visit', 'cities_order')
+    list_display = ('id', 'preliminary_agreement_number', 'city_to_visit', 'cities_order', 'hotel_reservation')
     list_filter = ('preliminary_agreement_number',)
     search_fields = ('id', 'city_to_visit', 'cities_order')
 

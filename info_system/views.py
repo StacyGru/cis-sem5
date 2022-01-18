@@ -18,7 +18,7 @@ from .forms import (
     CountryToVisitForm,
     CitiesToVisitForm,
     PaymentForm,
-    UserActivityForm, AddUserAuthForm
+    UserActivityForm, AddUserAuthForm, HotelReservationForm
 )
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
@@ -717,17 +717,109 @@ def edit_contract(request, pk):
 
 
 def get_hotel_reservations(request, pk):
-    contract = Contract.objects.get(id=pk)
-    preliminary_agreement_number = contract.preliminary_agreement_number
+    contract_instance = Contract.objects.get(id=pk)
+    contract_id = contract_instance.id
+    preliminary_agreement_number = contract_instance.preliminary_agreement_number
+    hotel_reservations = HotelReservation.objects.filter(contract_number=contract_id)
     travel_routes = TravelRoute.objects.filter(preliminary_agreement_number=preliminary_agreement_number)
-    hotel_reservations = HotelReservation.objects.filter(contract_number=pk)
     return render(
         request,
-        'administrator/contracts/hotel_reservations/hotel_reservations_list.html',
+        'administrator/contracts/hotel_reservations/hotel_reservations_view.html',
         {
-            'travel_routes': travel_routes,
+            'contract': contract_instance,
+            'hotel_reservations': hotel_reservations,
+            'travel_routes': travel_routes
+        }
+    )
+
+
+def edit_hotel_reservation(request, pk):
+    hotel_reservation = HotelReservation.objects.get(id=pk)
+    contract = hotel_reservation.contract_number
+    preliminary_agreement_instance = contract.preliminary_agreement_number
+    preliminary_agreement_id = preliminary_agreement_instance.id
+    travel_route_instance = TravelRoute.objects.get(preliminary_agreement_number=preliminary_agreement_id,
+                                                    hotel_reservation=hotel_reservation)
+    travel_route_city = travel_route_instance.city_to_visit
+    form = HotelReservationForm(instance=hotel_reservation)
+    if request.method == 'POST':
+        form = HotelReservationForm(request.POST, instance=hotel_reservation)
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form.is_valid() and form_activity.is_valid():
+            hotel_instance = hotel_reservation.hotel
+            reservation_city = hotel_instance.city
+            preliminary_agreement_instance = contract.preliminary_agreement_number
+            preliminary_agreement_id = preliminary_agreement_instance.id
+            travel_route_instance = TravelRoute.objects.get(preliminary_agreement_number=preliminary_agreement_id, hotel_reservation=hotel_reservation)
+            travel_route_city = travel_route_instance.city_to_visit
+            if reservation_city != travel_route_city:
+                messages.add_message(request, messages.ERROR,
+                                     'Выберите отель, соответсвующий выбранному городу!')
+            else:
+                form.save()
+                form_activity.save()
+                messages.add_message(request, messages.INFO, 'Бронирование успешно изменено!')
+                return redirect('hotel_reservations_list', pk=contract.id)
+    return render(
+        request,
+        'administrator/contracts/hotel_reservations/edit_hotel_reservation.html',
+        {
+            'hotel_reservation': hotel_reservation,
             'contract': contract,
-            'hotel_reservations': hotel_reservations
+            'travel_route_city': travel_route_city,
+            'form': form
+        }
+    )
+
+
+def add_hotel_reservation(request, **kwargs):
+    contract_instance = Contract.objects.get(id=kwargs.get('contract_pk'))
+    form = HotelReservationForm(initial={'contract_number': kwargs.get('contract_pk')})
+    travel_route_instance = TravelRoute.objects.get(id=kwargs.get('travel_route_pk'))
+    if request.method == 'POST':
+        form = HotelReservationForm(request.POST)
+        user = User.objects.get(pk=request.user.pk)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': user.id, 'date': str(datetime.datetime.now().date()),
+                 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+        if form.is_valid() and form_activity.is_valid():
+            hotel_reservation_instance = form.save()
+            TravelRoute.objects.filter(pk=kwargs.get('travel_route_pk')).update(hotel_reservation=hotel_reservation_instance)
+            hotel_instance = hotel_reservation_instance.hotel
+            reservation_city = hotel_instance.city
+            travel_route_instance = TravelRoute.objects.get(id=kwargs.get('travel_route_pk'))
+            travel_route_city = travel_route_instance.city_to_visit
+            if reservation_city != travel_route_city:
+                messages.add_message(request, messages.ERROR,
+                                     'Выберите отель, соответсвующий выбранному городу!')
+            else:
+                form_activity.save()
+                messages.add_message(request, messages.INFO, 'Бронирование успешно изменено!')
+                return redirect('hotel_reservations_list', pk=kwargs.get('contract_pk'))
+    return render(
+        request,
+        'administrator/contracts/hotel_reservations/add_hotel_reservation.html',
+        {
+            'form': form,
+            'contract': contract_instance,
+            'travel_route_instance': travel_route_instance
         }
     )
 

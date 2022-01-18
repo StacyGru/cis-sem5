@@ -46,7 +46,9 @@ urlpatterns = [
 
     path('contracts/', ContractsView.as_view(), name='contracts'),
     path('contracts/edit_сontract/<str:pk>/', views.edit_contract, name='edit_contract'),
-    path('contracts/hotel_reservations/hotel_reservations_list/<str:pk>/', views.get_hotel_reservations, name='hotel_reservations_list'),
+    path('contracts/hotel_reservations_list/<str:pk>/', views.get_hotel_reservations, name='hotel_reservations_list'),
+    path('contracts/hotel_reservations_list/edit_hotel_reservation/<str:pk>/', views.edit_hotel_reservation, name='edit_hotel_reservation'),
+    path('contracts/hotel_reservations_list/<str:contract_pk>/add_hotel_reservation/<str:travel_route_pk>/', views.add_hotel_reservation, name='add_hotel_reservation'),
     path('contracts/delete_сontract/<str:pk>/', views.delete_contract, name='delete_contract'),
     path('contracts/add_сontract/', views.add_contract, name='add_contract'),
 
